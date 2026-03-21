@@ -1,15 +1,19 @@
-import { useState } from "react";
-import { useEffect } from "react";
-import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import PublicReportPage from "./pages/PublicReportPage";
 
 function App() {
-    useEffect(() => {
-        fetch("api/health")
-            .then((res) => res.json())
-            .then((data) => console.log(data));
-    }, []);
-
-    return <h1>Dental App</h1>;
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/report/:id" element={<PublicReportPage />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
