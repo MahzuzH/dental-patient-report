@@ -22,6 +22,7 @@ api := r.Group("/api")
 	{
 		protected.POST("/patients", controllers.CreatePatient)
 		protected.GET("/patients", controllers.GetPatients)
+		protected.GET("/scans", controllers.GetScans)
 	}
 }
 }
