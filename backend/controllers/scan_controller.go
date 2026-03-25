@@ -41,6 +41,8 @@ type reportResponse struct {
 	Gender      string            `json:"gender"`
 	ScanDate    string            `json:"scan_date"`
 	Status      string            `json:"status"`
+	ImageUpper  string            `json:"image_upper"`
+	ImageLower  string            `json:"image_lower"`
 	Diagnosis   []reportDiagnosis `json:"diagnosis"`
 }
 
@@ -56,6 +58,8 @@ type createCheckupRequest struct {
 	DentistID    string                 `json:"dentist_id" binding:"required"`
 	CheckupDate  string                 `json:"checkup_date" binding:"required"`
 	GeneralNotes string                 `json:"general_notes"`
+	ImageUpper   string                 `json:"image_upper"`
+	ImageLower   string                 `json:"image_lower"`
 	Status       string                 `json:"status"`
 	Entries      []odontogramEntryInput `json:"entries"`
 }
@@ -65,6 +69,8 @@ type updateCheckupRequest struct {
 	DentistID      string                 `json:"dentist_id"`
 	CheckupDate    string                 `json:"checkup_date"`
 	GeneralNotes   string                 `json:"general_notes"`
+	ImageUpper     string                 `json:"image_upper"`
+	ImageLower     string                 `json:"image_lower"`
 	Status         string                 `json:"status"`
 	Entries        []odontogramEntryInput `json:"entries"`
 	ReplaceEntries bool                   `json:"replace_entries"`
@@ -252,6 +258,8 @@ func GetReport(c *gin.Context) {
 		Gender      string    `gorm:"column:gender"`
 		CheckupDate time.Time `gorm:"column:checkup_date"`
 		Status      string    `gorm:"column:status"`
+		ImageUpper  string    `gorm:"column:image_upper"`
+		ImageLower  string    `gorm:"column:image_lower"`
 	}
 
 	var row reportRow
@@ -264,7 +272,9 @@ func GetReport(c *gin.Context) {
 			p.age,
 			COALESCE(p.gender, '') AS gender,
 			c.checkup_date,
-			c.status
+			c.status,
+			COALESCE(c.image_upper, '') AS image_upper,
+			COALESCE(c.image_lower, '') AS image_lower
 		`).
 		Joins("JOIN patients p ON p.id = c.patient_id").
 		Joins("LEFT JOIN partner_institutions pi ON pi.id = p.institution_id").
@@ -284,6 +294,8 @@ func GetReport(c *gin.Context) {
 		Institution: row.Institution,
 		ScanDate:    row.CheckupDate.Format("2006-01-02"),
 		Status:      normalizeStatus(row.Status),
+		ImageUpper:  row.ImageUpper,
+		ImageLower:  row.ImageLower,
 		Diagnosis:   []reportDiagnosis{},
 	}
 
@@ -364,6 +376,8 @@ func GetCheckupByID(c *gin.Context) {
 		DentistName  string    `gorm:"column:dentist_name" json:"dentist_name"`
 		CheckupDate  time.Time `gorm:"column:checkup_date" json:"-"`
 		GeneralNotes string    `gorm:"column:general_notes" json:"general_notes"`
+		ImageUpper   string    `gorm:"column:image_upper" json:"image_upper"`
+		ImageLower   string    `gorm:"column:image_lower" json:"image_lower"`
 		Status       string    `gorm:"column:status" json:"status"`
 		CreatedAt    string    `gorm:"column:created_at" json:"created_at"`
 	}
@@ -390,6 +404,8 @@ func GetCheckupByID(c *gin.Context) {
 			d.full_name AS dentist_name,
 			c.checkup_date,
 			COALESCE(c.general_notes, '') AS general_notes,
+			COALESCE(c.image_upper, '') AS image_upper,
+			COALESCE(c.image_lower, '') AS image_lower,
 			c.status,
 			DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i:%s') AS created_at
 		`).
@@ -433,6 +449,8 @@ func GetCheckupByID(c *gin.Context) {
 		"dentist_name":  row.DentistName,
 		"checkup_date":  row.CheckupDate.Format("2006-01-02"),
 		"general_notes": row.GeneralNotes,
+		"image_upper":   row.ImageUpper,
+		"image_lower":   row.ImageLower,
 		"status":        normalizeStatus(row.Status),
 		"created_at":    row.CreatedAt,
 		"entries":       entries,
@@ -450,6 +468,8 @@ func CreateCheckup(c *gin.Context) {
 	req.DentistID = strings.TrimSpace(req.DentistID)
 	req.CheckupDate = strings.TrimSpace(req.CheckupDate)
 	req.GeneralNotes = strings.TrimSpace(req.GeneralNotes)
+	req.ImageUpper = strings.TrimSpace(req.ImageUpper)
+	req.ImageLower = strings.TrimSpace(req.ImageLower)
 	req.Status = parseStatusForDB(req.Status)
 
 	if req.PatientID == "" || req.DentistID == "" || req.CheckupDate == "" {
@@ -496,11 +516,11 @@ func CreateCheckup(c *gin.Context) {
 
 	insertCheckupQuery := `
 		INSERT INTO checkups
-			(id, patient_id, dentist_id, checkup_date, general_notes, status)
+			(id, patient_id, dentist_id, checkup_date, general_notes, image_upper, image_lower, status)
 		VALUES
-			(UUID(), ?, ?, ?, NULLIF(?, ''), ?)
+			(UUID(), ?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), ?)
 	`
-	if err := tx.Exec(insertCheckupQuery, req.PatientID, req.DentistID, req.CheckupDate, req.GeneralNotes, req.Status).Error; err != nil {
+	if err := tx.Exec(insertCheckupQuery, req.PatientID, req.DentistID, req.CheckupDate, req.GeneralNotes, req.ImageUpper, req.ImageLower, req.Status).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create checkup"})
 		return
@@ -577,6 +597,8 @@ func UpdateCheckup(c *gin.Context) {
 	req.DentistID = strings.TrimSpace(req.DentistID)
 	req.CheckupDate = strings.TrimSpace(req.CheckupDate)
 	req.GeneralNotes = strings.TrimSpace(req.GeneralNotes)
+	req.ImageUpper = strings.TrimSpace(req.ImageUpper)
+	req.ImageLower = strings.TrimSpace(req.ImageLower)
 	if strings.TrimSpace(req.Status) != "" {
 		req.Status = parseStatusForDB(req.Status)
 	}
@@ -639,6 +661,12 @@ func UpdateCheckup(c *gin.Context) {
 	}
 	if req.GeneralNotes != "" {
 		updates["general_notes"] = req.GeneralNotes
+	}
+	if req.ImageUpper != "" {
+		updates["image_upper"] = req.ImageUpper
+	}
+	if req.ImageLower != "" {
+		updates["image_lower"] = req.ImageLower
 	}
 	if req.Status != "" {
 		updates["status"] = req.Status

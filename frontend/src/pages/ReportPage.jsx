@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useDashboardPageLogic } from "@/hooks/useDashboardPageLogic";
-import { useNavigate } from "react-router-dom";
+import { useReportPageLogic } from "@/hooks/useReportPageLogic";
 import {
     LayoutDashboard,
     FileText,
@@ -30,15 +29,15 @@ import {
 } from "recharts";
 
 export default function ReportPage() {
-    const navigate = useNavigate();
     const {
+        navigate,
         stats,
         visitorsLast7Days,
         statusData,
         institutionData,
         handleDownloadReport,
         handleLogout,
-    } = useDashboardPageLogic();
+    } = useReportPageLogic();
 
     return (
         <div className="h-screen w-screen overflow-hidden bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 text-slate-900">

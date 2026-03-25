@@ -1,46 +1,15 @@
-import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Search, Plus, Pencil, Eye, Users, X } from "lucide-react";
-
-const authFetch = (url, opts = {}) =>
-  fetch(url, {
-    ...opts,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      ...(opts.headers || {}),
-    },
-  });
-
-const EMPTY_FORM = {
-  institution_id: "",
-  full_name: "",
-  student_id: "",
-  date_of_birth: "",
-  age: "",
-  gender: "",
-  address: "",
-  phone: "",
-};
+import { usePatientPageLogic } from "@/hooks/usePatientPageLogic";
 
 function genderLabel(gender) {
   if (gender === "male") return "Laki-laki";
@@ -55,151 +24,17 @@ function genderBadge(gender) {
 }
 
 export default function PatientPage() {
-  const navigate = useNavigate();
-
-  const [patients, setPatients] = useState([]);
-  const [institutions, setInstitutions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const [modalMode, setModalMode] = useState(null); // "create" | "edit" | "view"
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState("");
-
-  /* ─── data fetchers ─── */
-  const fetchPatients = async () => {
-    setLoading(true);
-    try {
-      const res = await authFetch("/api/patients");
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal memuat data pasien");
-      setPatients(Array.isArray(data) ? data : []);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchInstitutions = async () => {
-    try {
-      const res = await authFetch("/api/institutions");
-      const data = await res.json();
-      if (res.ok && Array.isArray(data)) setInstitutions(data);
-    } catch (e) {
-      console.error("Failed to load institutions:", e);
-    }
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/", { replace: true });
-      return;
-    }
-    fetchPatients();
-    fetchInstitutions();
-  }, [navigate]);
-
-  /* ─── filtering ─── */
-  const filtered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return patients;
-    return patients.filter(
-      (p) =>
-        p.full_name?.toLowerCase().includes(q) ||
-        p.student_id?.toLowerCase().includes(q) ||
-        p.institution_name?.toLowerCase().includes(q),
-    );
-  }, [patients, searchQuery]);
-
-  /* ─── modal helpers ─── */
-  const openCreate = () => {
-    setForm(EMPTY_FORM);
-    setFormError("");
-    setSelectedPatient(null);
-    setModalMode("create");
-  };
-
-  const openEdit = (patient) => {
-    setSelectedPatient(patient);
-    setForm({
-      institution_id: patient.institution_id || "",
-      full_name: patient.full_name || "",
-      student_id: patient.student_id || "",
-      date_of_birth: patient.date_of_birth || "",
-      age: patient.age != null ? String(patient.age) : "",
-      gender: patient.gender || "",
-      address: patient.address || "",
-      phone: patient.phone || "",
-    });
-    setFormError("");
-    setModalMode("edit");
-  };
-
-  const openView = (patient) => {
-    setSelectedPatient(patient);
-    setModalMode("view");
-  };
-
-  const closeModal = () => {
-    setModalMode(null);
-    setSelectedPatient(null);
-    setFormError("");
-  };
-
-  /* ─── save ─── */
-  const handleSave = async () => {
-    setFormError("");
-    if (!form.institution_id) {
-      setFormError("Instansi wajib dipilih.");
-      return;
-    }
-    if (!form.full_name.trim()) {
-      setFormError("Nama lengkap wajib diisi.");
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const payload = {
-        institution_id: form.institution_id,
-        full_name: form.full_name.trim(),
-        student_id: form.student_id.trim(),
-        date_of_birth: form.date_of_birth || undefined,
-        age: form.age ? parseInt(form.age, 10) : undefined,
-        gender: form.gender || undefined,
-        address: form.address.trim() || undefined,
-        phone: form.phone.trim() || undefined,
-      };
-
-      const isCreate = modalMode === "create";
-      const url = isCreate
-        ? "/api/patients"
-        : `/api/patients/${selectedPatient.id}`;
-      const method = isCreate ? "POST" : "PUT";
-
-      const res = await authFetch(url, {
-        method,
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal menyimpan data");
-
-      await fetchPatients();
-      closeModal();
-    } catch (e) {
-      setFormError(e.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const setField = (key) => (e) =>
-    setForm((f) => ({ ...f, [key]: e.target.value }));
+  const {
+    navigate,
+    patients,
+    loading,
+    error,
+    searchQuery,
+    setSearchQuery,
+    viewPatient,
+    setViewPatient,
+    filtered,
+  } = usePatientPageLogic();
 
   /* ─── render ─── */
   return (
@@ -218,7 +53,7 @@ export default function PatientPage() {
             </div>
             <Button
               className="gap-2 bg-violet-600 hover:bg-violet-700"
-              onClick={openCreate}
+              onClick={() => navigate("/pasien/baru")}
             >
               <Plus size={16} /> Tambah Pasien
             </Button>
@@ -330,7 +165,7 @@ export default function PatientPage() {
                                 variant="ghost"
                                 className="h-8 w-8 p-0 text-slate-400 hover:text-slate-700"
                                 title="Lihat detail"
-                                onClick={() => openView(p)}
+                                onClick={() => setViewPatient(p)}
                               >
                                 <Eye size={14} />
                               </Button>
@@ -339,7 +174,9 @@ export default function PatientPage() {
                                 variant="ghost"
                                 className="h-8 w-8 p-0 text-violet-400 hover:text-violet-700 hover:bg-violet-50"
                                 title="Edit pasien"
-                                onClick={() => openEdit(p)}
+                                onClick={() =>
+                                  navigate(`/pasien/${p.id}/edit`)
+                                }
                               >
                                 <Pencil size={14} />
                               </Button>
@@ -361,211 +198,59 @@ export default function PatientPage() {
         </main>
       </div>
 
-      {/* ── Create / Edit Modal ── */}
+      {/* ── View Modal (kept as modal since it's read-only) ── */}
       <Dialog
-        open={modalMode === "create" || modalMode === "edit"}
-        onOpenChange={closeModal}
+        open={viewPatient !== null}
+        onOpenChange={(open) => {
+          if (!open) setViewPatient(null);
+        }}
       >
-        <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {modalMode === "create" ? "Tambah Pasien Baru" : "Edit Pasien"}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4 mt-2">
-            {formError && (
-              <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-600">
-                {formError}
-              </div>
-            )}
-
-            {/* Instansi */}
-            <div>
-              <Label>
-                Instansi <span className="text-red-500">*</span>
-              </Label>
-              <Select
-                value={form.institution_id}
-                onValueChange={(v) =>
-                  setForm((f) => ({ ...f, institution_id: v }))
-                }
-              >
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Pilih instansi..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {institutions.map((inst) => (
-                    <SelectItem key={inst.id} value={inst.id}>
-                      {inst.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Nama Lengkap */}
-            <div>
-              <Label>
-                Nama Lengkap <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                className="mt-1"
-                value={form.full_name}
-                onChange={setField("full_name")}
-                placeholder="Masukkan nama lengkap"
-              />
-            </div>
-
-            {/* NIS + Gender */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>NIS / Student ID</Label>
-                <Input
-                  className="mt-1"
-                  value={form.student_id}
-                  onChange={setField("student_id")}
-                  placeholder="AH-2024-XXXX"
-                />
-              </div>
-              <div>
-                <Label>Jenis Kelamin</Label>
-                <Select
-                  value={form.gender}
-                  onValueChange={(v) => setForm((f) => ({ ...f, gender: v }))}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Pilih..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Laki-laki</SelectItem>
-                    <SelectItem value="female">Perempuan</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Tanggal Lahir + Usia */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Tanggal Lahir</Label>
-                <Input
-                  className="mt-1"
-                  type="date"
-                  value={form.date_of_birth}
-                  onChange={setField("date_of_birth")}
-                />
-              </div>
-              <div>
-                <Label>Usia (tahun)</Label>
-                <Input
-                  className="mt-1"
-                  type="number"
-                  min={0}
-                  max={120}
-                  value={form.age}
-                  onChange={setField("age")}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            {/* Telepon */}
-            <div>
-              <Label>No. Telepon</Label>
-              <Input
-                className="mt-1"
-                value={form.phone}
-                onChange={setField("phone")}
-                placeholder="08xxxxxxxxxx"
-              />
-            </div>
-
-            {/* Alamat */}
-            <div>
-              <Label>Alamat</Label>
-              <Textarea
-                className="mt-1 resize-none"
-                rows={2}
-                value={form.address}
-                onChange={setField("address")}
-                placeholder="Masukkan alamat lengkap"
-              />
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-2 pt-2">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={closeModal}
-                disabled={saving}
-              >
-                Batal
-              </Button>
-              <Button
-                className="flex-1 bg-violet-600 hover:bg-violet-700"
-                onClick={handleSave}
-                disabled={saving}
-              >
-                {saving
-                  ? "Menyimpan..."
-                  : modalMode === "create"
-                    ? "Simpan Pasien"
-                    : "Update Pasien"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* ── View Modal ── */}
-      <Dialog open={modalMode === "view"} onOpenChange={closeModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Detail Pasien</DialogTitle>
           </DialogHeader>
-          {selectedPatient && (
+          {viewPatient && (
             <div className="mt-2 space-y-0">
               {[
-                { label: "Nama Lengkap", value: selectedPatient.full_name },
+                { label: "Nama Lengkap", value: viewPatient.full_name },
                 {
                   label: "NIS / Student ID",
-                  value: selectedPatient.student_id || "-",
+                  value: viewPatient.student_id || "-",
                 },
                 {
                   label: "Instansi",
-                  value: selectedPatient.institution_name || "-",
+                  value: viewPatient.institution_name || "-",
                 },
                 {
                   label: "Tanggal Lahir",
-                  value: selectedPatient.date_of_birth
-                    ? new Date(
-                        selectedPatient.date_of_birth,
-                      ).toLocaleDateString("id-ID", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      })
+                  value: viewPatient.date_of_birth
+                    ? new Date(viewPatient.date_of_birth).toLocaleDateString(
+                        "id-ID",
+                        {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric",
+                        },
+                      )
                     : "-",
                 },
                 {
                   label: "Usia",
                   value:
-                    selectedPatient.age != null
-                      ? `${selectedPatient.age} tahun`
+                    viewPatient.age != null
+                      ? `${viewPatient.age} tahun`
                       : "-",
                 },
                 {
                   label: "Jenis Kelamin",
-                  value: genderLabel(selectedPatient.gender),
+                  value: genderLabel(viewPatient.gender),
                 },
-                { label: "No. Telepon", value: selectedPatient.phone || "-" },
-                { label: "Alamat", value: selectedPatient.address || "-" },
+                { label: "No. Telepon", value: viewPatient.phone || "-" },
+                { label: "Alamat", value: viewPatient.address || "-" },
                 {
                   label: "Terdaftar",
-                  value: selectedPatient.created_at
-                    ? new Date(selectedPatient.created_at).toLocaleDateString(
+                  value: viewPatient.created_at
+                    ? new Date(viewPatient.created_at).toLocaleDateString(
                         "id-ID",
                         {
                           day: "2-digit",
@@ -593,15 +278,16 @@ export default function PatientPage() {
                 <Button
                   variant="outline"
                   className="flex-1"
-                  onClick={closeModal}
+                  onClick={() => setViewPatient(null)}
                 >
                   Tutup
                 </Button>
                 <Button
                   className="flex-1 gap-2 bg-violet-600 hover:bg-violet-700"
                   onClick={() => {
-                    closeModal();
-                    openEdit(selectedPatient);
+                    const patientId = viewPatient.id;
+                    setViewPatient(null);
+                    navigate(`/pasien/${patientId}/edit`);
                   }}
                 >
                   <Pencil size={14} /> Edit Pasien

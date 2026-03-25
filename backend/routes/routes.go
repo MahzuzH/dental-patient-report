@@ -8,6 +8,9 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
+	// Serve uploaded images
+	r.Static("/uploads", "./uploads")
+
 	api := r.Group("/api")
 	{
 		api.POST("/login", controllers.Login)
@@ -34,6 +37,9 @@ func SetupRoutes(r *gin.Engine) {
 			protected.GET("/checkups/:id", controllers.GetCheckupByID)
 			protected.POST("/checkups", controllers.CreateCheckup)
 			protected.PUT("/checkups/:id", controllers.UpdateCheckup)
+
+			// uploads
+			protected.POST("/upload", controllers.UploadImage)
 		}
 	}
 }
