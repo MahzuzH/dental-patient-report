@@ -8,21 +8,32 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-
-api := r.Group("/api")
-{
-	api.POST("/login", controllers.Login)
-
-	// public
-	api.GET("/diseases", controllers.GetDiseases)
-
-	// protected
-	protected := api.Group("/")
-	protected.Use(middleware.AuthMiddleware())
+	api := r.Group("/api")
 	{
-		protected.POST("/patients", controllers.CreatePatient)
-		protected.GET("/patients", controllers.GetPatients)
-		protected.GET("/scans", controllers.GetScans)
+		api.POST("/login", controllers.Login)
+
+		// public
+		api.GET("/diseases", controllers.GetDiseases)
+		api.GET("/report/:id", controllers.GetReport)
+
+		// protected
+		protected := api.Group("/")
+		protected.Use(middleware.AuthMiddleware())
+		{
+			// institutions
+			protected.GET("/institutions", controllers.GetInstitutions)
+
+			// patients
+			protected.POST("/patients", controllers.CreatePatient)
+			protected.GET("/patients", controllers.GetPatients)
+			protected.GET("/patients/:id", controllers.GetPatientByID)
+			protected.PUT("/patients/:id", controllers.UpdatePatient)
+
+			// checkups / scans
+			protected.GET("/scans", controllers.GetScans)
+			protected.GET("/checkups/:id", controllers.GetCheckupByID)
+			protected.POST("/checkups", controllers.CreateCheckup)
+			protected.PUT("/checkups/:id", controllers.UpdateCheckup)
+		}
 	}
-}
 }

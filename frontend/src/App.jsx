@@ -3,17 +3,29 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import PublicReportPage from "./pages/PublicReportPage";
+import PemeriksaanPage from "./pages/PemeriksaanPage";
+import ReportPage from "./pages/ReportPage";
+import PatientPage from "./pages/PatientPage";
+import TambahPemeriksaanPage from "./pages/TambahPemeriksaanPage";
 
 function App() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<LoginPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/report/:id" element={<PublicReportPage />} />
-            </Routes>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/pemeriksaan" element={<PemeriksaanPage />} />
+        <Route path="/pemeriksaan/baru" element={<TambahPemeriksaanPage />} />
+        <Route
+          path="/pemeriksaan/:id/edit"
+          element={<TambahPemeriksaanPage />}
+        />
+        <Route path="/pasien" element={<PatientPage />} />
+        <Route path="/report" element={<ReportPage />} />
+        <Route path="/report/:id" element={<PublicReportPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
