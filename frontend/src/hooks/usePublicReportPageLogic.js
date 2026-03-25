@@ -138,11 +138,39 @@ export function usePublicReportPageLogic() {
         [report?.diagnosis],
     );
 
+    const groupedRecommendations = useMemo(() => {
+        const diag = report?.diagnosis || [];
+        const map = {};
+        diag.forEach((d) => {
+            const key = String(d?.disease || "").trim();
+            if (!key) return;
+            if (!map[key]) {
+                map[key] = {
+                    disease: key,
+                    color: d.color || "#000",
+                    treatment_recommendation:
+                        d.treatment_recommendation ||
+                        d.treatmentRecommendation ||
+                        "",
+                    teeth: [],
+                    symptoms: d.symptoms || "",
+                };
+            }
+            if (d.tooth != null) map[key].teeth.push(d.tooth);
+        });
+
+        return Object.values(map).map((g) => ({
+            ...g,
+            teeth: Array.from(new Set(g.teeth)).sort((a, b) => a - b),
+        }));
+    }, [report?.diagnosis]);
+
     return {
         id,
         report,
         loading,
         error,
         cards,
+        groupedRecommendations,
     };
 }

@@ -31,12 +31,14 @@ type reportDiagnosis struct {
 	Disease                 string `json:"disease"`
 	Color                   string `json:"color"`
 	TreatmentRecommendation string `json:"treatment_recommendation"`
+	Symptoms                string `json:"symptoms"`
 }
 
 type reportResponse struct {
 	ID          string            `json:"id"`
 	PatientName string            `json:"patient_name"`
 	Institution string            `json:"institution"`
+	DateOfBirth string            `json:"date_of_birth"`
 	Age         int               `json:"age"`
 	Gender      string            `json:"gender"`
 	ScanDate    string            `json:"scan_date"`
@@ -254,6 +256,7 @@ func GetReport(c *gin.Context) {
 		ID          string    `gorm:"column:id"`
 		PatientName string    `gorm:"column:patient_name"`
 		Institution string    `gorm:"column:institution"`
+		DateOfBirth string    `gorm:"column:date_of_birth"`
 		Age         *int      `gorm:"column:age"`
 		Gender      string    `gorm:"column:gender"`
 		CheckupDate time.Time `gorm:"column:checkup_date"`
@@ -269,6 +272,7 @@ func GetReport(c *gin.Context) {
 			c.id,
 			p.full_name AS patient_name,
 			COALESCE(pi.name, '-') AS institution,
+			COALESCE(DATE_FORMAT(p.date_of_birth, '%Y-%m-%d'), '') AS date_of_birth,
 			p.age,
 			COALESCE(p.gender, '') AS gender,
 			c.checkup_date,
@@ -292,6 +296,7 @@ func GetReport(c *gin.Context) {
 		ID:          row.ID,
 		PatientName: row.PatientName,
 		Institution: row.Institution,
+		DateOfBirth: row.DateOfBirth,
 		ScanDate:    row.CheckupDate.Format("2006-01-02"),
 		Status:      normalizeStatus(row.Status),
 		ImageUpper:  row.ImageUpper,
@@ -309,6 +314,7 @@ func GetReport(c *gin.Context) {
 		Disease                 string `gorm:"column:condition_name"`
 		Color                   string `gorm:"column:color_code"`
 		TreatmentRecommendation string `gorm:"column:treatment_recommendation"`
+		Symptoms                string `gorm:"column:symptoms"`
 	}
 
 	var diagnosisRows []diagnosisRow
@@ -318,7 +324,8 @@ func GetReport(c *gin.Context) {
 			oe.tooth_number,
 			dc.name AS condition_name,
 			COALESCE(dc.color_code, '#10b981') AS color_code,
-			COALESCE(dc.treatment_recommendation, '') AS treatment_recommendation
+			COALESCE(dc.treatment_recommendation, '') AS treatment_recommendation,
+			COALESCE(dc.symptoms, '') AS symptoms
 		`).
 		Joins("JOIN dental_conditions dc ON dc.id = oe.condition_id").
 		Where("oe.checkup_id = ?", row.ID).
@@ -331,6 +338,7 @@ func GetReport(c *gin.Context) {
 			Disease:                 d.Disease,
 			Color:                   d.Color,
 			TreatmentRecommendation: d.TreatmentRecommendation,
+			Symptoms:                d.Symptoms,
 		})
 	}
 
