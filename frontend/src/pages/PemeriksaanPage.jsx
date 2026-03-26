@@ -13,7 +13,8 @@ import {
     Pencil,
     Eye,
 } from "lucide-react";
-import { QRCodeCanvas } from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react"; // Keep this import
+import { useEffect } from "react"; // Only keep useEffect
 import {
     Dialog,
     DialogContent,
@@ -30,6 +31,11 @@ export default function PemeriksaanPage() {
         searchQuery,
         setSearchQuery,
         allExams,
+        page,
+        setPage,
+        limit,
+        setLimit,
+        total,
         formatDate,
         selectedExam,
         isQRModalOpen,
@@ -60,7 +66,7 @@ export default function PemeriksaanPage() {
 
                         <div className="flex items-center gap-2">
                             <Button
-                                className="gap-2 bg-violet-600 hover:bg-violet-700"
+                                className="gap-2 bg-violet-500 text-white hover:bg-violet-600"
                                 onClick={() => navigate("/pemeriksaan/baru")}
                             >
                                 <Plus size={16} /> Pemeriksaan Baru
@@ -116,20 +122,23 @@ export default function PemeriksaanPage() {
                             <div className="flex-1 overflow-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="border-b border-violet-100 bg-slate-50/50 text-left text-slate-500 sticky top-0">
-                                            <th className="px-6 py-3 font-semibold">
+                                        <tr
+                                            className="border-b border-violet-100 bg-white text-left text-slate-500"
+                                            style={{ top: 0 }}
+                                        >
+                                            <th className="px-6 py-3 font-semibold sticky top-0 bg-white z-10">
                                                 Nama Pasien
                                             </th>
-                                            <th className="px-6 py-3 font-semibold">
+                                            <th className="px-6 py-3 font-semibold sticky top-0 bg-white z-10">
                                                 Instansi
                                             </th>
-                                            <th className="px-6 py-3 font-semibold">
+                                            <th className="px-6 py-3 font-semibold sticky top-0 bg-white z-10">
                                                 Tanggal
                                             </th>
-                                            <th className="px-6 py-3 font-semibold">
+                                            <th className="px-6 py-3 font-semibold sticky top-0 bg-white z-10">
                                                 Status
                                             </th>
-                                            <th className="px-6 py-3 font-semibold text-center">
+                                            <th className="px-6 py-3 font-semibold text-center sticky top-0 bg-white z-10">
                                                 Aksi
                                             </th>
                                         </tr>
@@ -266,23 +275,30 @@ export default function PemeriksaanPage() {
                             {/* Footer */}
                             <div className="p-4 border-t border-violet-50 bg-slate-50/30 flex items-center justify-between text-xs text-slate-500 shrink-0">
                                 <span>
-                                    Menampilkan {allExams.length} dari total
-                                    data
+                                    Menampilkan {allExams.length} dari total{" "}
+                                    {total}
                                 </span>
                                 <div className="flex gap-1">
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled
                                         className="h-7 text-xs"
+                                        disabled={page <= 1}
+                                        onClick={() =>
+                                            setPage(Math.max(1, page - 1))
+                                        }
                                     >
                                         Sebelumnya
                                     </Button>
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled
                                         className="h-7 text-xs"
+                                        disabled={
+                                            allExams.length === 0 ||
+                                            page * limit >= total
+                                        }
+                                        onClick={() => setPage(page + 1)}
                                     >
                                         Berikutnya
                                     </Button>

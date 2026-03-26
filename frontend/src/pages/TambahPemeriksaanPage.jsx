@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -90,6 +90,7 @@ export default function TambahPemeriksaanPage() {
     /* UI state */
     const [patientSearch, setPatientSearch] = useState("");
     const [patientDropdown, setPatientDropdown] = useState(false);
+    const patientSearchRef = useRef(null);
     const [selectedTooth, setSelectedTooth] = useState(null);
     const [toothDialogOpen, setToothDialogOpen] = useState(false);
     const [toothForm, setToothForm] = useState(EMPTY_TOOTH_FORM);
@@ -187,6 +188,26 @@ export default function TambahPemeriksaanPage() {
         setPatientSearch(p.full_name);
         setPatientDropdown(false);
     };
+
+    // close patient dropdown when clicking outside or pressing Escape
+    useEffect(() => {
+        function onPointer(e) {
+            const el = patientSearchRef.current;
+            if (!el) return;
+            if (!el.contains(e.target)) setPatientDropdown(false);
+        }
+        function onKey(e) {
+            if (e.key === "Escape") setPatientDropdown(false);
+        }
+        document.addEventListener("mousedown", onPointer);
+        document.addEventListener("touchstart", onPointer);
+        document.addEventListener("keydown", onKey);
+        return () => {
+            document.removeEventListener("mousedown", onPointer);
+            document.removeEventListener("touchstart", onPointer);
+            document.removeEventListener("keydown", onKey);
+        };
+    }, []);
 
     /* ─── odontogram helpers ─── */
     const openToothDialog = (tooth) => {
@@ -447,7 +468,7 @@ export default function TambahPemeriksaanPage() {
                         {/* ── LEFT COLUMN ── */}
                         <div className="lg:col-span-1 space-y-4">
                             {/* Patient Select */}
-                            <Card className="border-violet-100 bg-white shadow-sm">
+                            <Card className="border-violet-100 bg-white shadow-sm overflow-visible">
                                 <CardContent className="p-5 space-y-3">
                                     <div className="flex items-center gap-2">
                                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100">
@@ -462,7 +483,10 @@ export default function TambahPemeriksaanPage() {
                                     </div>
 
                                     {/* Patient search input */}
-                                    <div className="relative">
+                                    <div
+                                        className="relative"
+                                        ref={patientSearchRef}
+                                    >
                                         <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 focus-within:border-violet-400 focus-within:bg-white transition-colors">
                                             <Search
                                                 size={14}

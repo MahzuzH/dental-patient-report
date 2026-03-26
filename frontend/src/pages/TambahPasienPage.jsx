@@ -114,7 +114,7 @@ export default function TambahPasienPage() {
                         {/* ── LEFT COLUMN: Patient Identity ── */}
                         <div className="space-y-4">
                             {/* Instansi & Identitas */}
-                            <Card className="border-violet-100 bg-white shadow-sm">
+                            <Card className="border-violet-100 bg-white shadow-sm overflow-visible">
                                 <CardContent className="p-5 space-y-4">
                                     <div className="flex items-center gap-2">
                                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100">

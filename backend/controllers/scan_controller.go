@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"dental-app/config"
+	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -186,9 +188,26 @@ func GetScans(c *gin.Context) {
 		LatestQRToken string    `gorm:"column:latest_qr_token"`
 	}
 
+	// parse pagination and query params
+	page := 1
+	limit := 20
+	if p := strings.TrimSpace(c.Query("page")); p != "" {
+		if v, err := strconv.Atoi(p); err == nil && v > 0 {
+			page = v
+		}
+	}
+	if l := strings.TrimSpace(c.Query("limit")); l != "" {
+		if v, err := strconv.Atoi(l); err == nil && v > 0 && v <= 100 {
+			limit = v
+		}
+	}
+
+	q := strings.TrimSpace(c.Query("q"))
+
 	var rows []scanRow
 
-	err := config.DB.
+	// base query with joins
+	base := config.DB.
 		Table("checkups c").
 		Select(`
 			c.id,
@@ -210,9 +229,26 @@ func GetScans(c *gin.Context) {
 					ORDER BY q2.created_at DESC
 					LIMIT 1
 				)
-		`).
-		Order("c.checkup_date DESC, c.created_at DESC").
-		Scan(&rows).Error
+		`)
+
+	// apply search filter
+	if q != "" {
+		like := "%%%s%%"
+		pattern := strings.ToLower(q)
+		base = base.Where("LOWER(p.full_name) LIKE ? OR LOWER(COALESCE(pi.name, '')) LIKE ? OR LOWER(c.status) LIKE ?",
+			fmt.Sprintf(like, pattern), fmt.Sprintf(like, pattern), fmt.Sprintf(like, pattern))
+	}
+
+	// count total
+	var total int64
+	if err := base.Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to count scans"})
+		return
+	}
+
+	// fetch page
+	offset := (page - 1) * limit
+	err := base.Order("c.checkup_date DESC, c.created_at DESC").Limit(limit).Offset(offset).Scan(&rows).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch scans"})
 		return
@@ -242,7 +278,7 @@ func GetScans(c *gin.Context) {
 		result = append(result, item)
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{"items": result, "total": total})
 }
 
 func GetReport(c *gin.Context) {
