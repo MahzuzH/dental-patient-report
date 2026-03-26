@@ -23,6 +23,8 @@ func SetupRoutes(r *gin.Engine) {
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware())
 		{
+			// current user
+			protected.GET("/me", controllers.GetProfile)
 			// institutions
 			protected.GET("/institutions", controllers.GetInstitutions)
 

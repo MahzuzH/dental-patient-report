@@ -4,6 +4,7 @@ import (
 	"dental-app/config"
 	"dental-app/utils"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -56,5 +57,38 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
+	})
+}
+
+func GetProfile(c *gin.Context) {
+	rawUserID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	userID, ok := rawUserID.(string)
+	if !ok || strings.TrimSpace(userID) == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user id"})
+		return
+	}
+
+	type dentistProfile struct {
+		ID       string `gorm:"column:id" json:"id"`
+		FullName string `gorm:"column:full_name" json:"full_name"`
+		Email    string `gorm:"column:email" json:"email"`
+	}
+
+	var d dentistProfile
+	err := config.DB.Table("dentists").Select("id, full_name, email").Where("id = ?", userID).First(&d).Error
+	if err != nil || d.ID == "" {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Dentist not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"id":        d.ID,
+		"full_name": d.FullName,
+		"email":     d.Email,
 	})
 }

@@ -26,6 +26,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
+import { Sidebar } from "@/components/Sidebar";
 import {
     ResponsiveContainer,
     LineChart,
@@ -77,50 +78,7 @@ export default function DashboardPage() {
     return (
         <div className="h-screen w-screen overflow-hidden bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 text-slate-900 transition-colors">
             <div className="h-full w-full">
-                <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col border-r border-violet-100 bg-white px-4 py-6 lg:flex">
-                    <div className="mb-8 px-2">
-                        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-600">
-                            Sefya Dental Studio
-                        </p>
-                        <h1 className="mt-2 text-xl font-bold">
-                            Clinic Dashboard
-                        </h1>
-                    </div>
-
-                    <nav className="flex flex-col gap-2 text-sm">
-                        <Button
-                            variant="ghost"
-                            className="justify-start gap-2 bg-violet-100 text-violet-700 hover:bg-violet-200"
-                            onClick={() => navigate("/dashboard")}
-                        >
-                            <LayoutDashboard size={16} /> Dashboard
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            className="justify-start gap-2"
-                            onClick={() => navigate("/pemeriksaan")}
-                        >
-                            <ClipboardList size={16} /> Pemeriksaan
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            className="justify-start gap-2"
-                            onClick={() => navigate("/report")}
-                        >
-                            <FileText size={16} /> Report
-                        </Button>
-                    </nav>
-
-                    <div className="mt-auto rounded-xl border border-violet-100 bg-violet-50 p-4">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">
-                            Akun Aktif
-                        </p>
-                        <p className="mt-1 font-semibold">Administrator</p>
-                        <p className="text-xs text-slate-500">
-                            Dental Reporting Unit
-                        </p>
-                    </div>
-                </aside>
+                <Sidebar active="dashboard" />
 
                 <main className="h-full space-y-3 overflow-hidden p-3 sm:p-4 lg:pl-[17rem]">
                     <header className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-violet-100 bg-white p-3 shadow-sm">

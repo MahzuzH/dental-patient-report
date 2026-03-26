@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react"; // Keep this import
 import { useEffect } from "react"; // Only keep useEffect
+import Pagination from "@/components/ui/pagination";
 import {
     Dialog,
     DialogContent,
@@ -45,6 +46,11 @@ export default function PemeriksaanPage() {
         handleOpenQR,
         qrUrl,
     } = usePemeriksaanPageLogic();
+
+    const totalPages =
+        total && limit ? Math.max(1, Math.ceil(total / limit)) : 1;
+    const progressPercent =
+        totalPages > 0 ? Math.round((page / totalPages) * 100) : 0;
 
     return (
         <div className="h-screen w-screen overflow-hidden bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 text-slate-900">
@@ -274,34 +280,13 @@ export default function PemeriksaanPage() {
 
                             {/* Footer */}
                             <div className="p-4 border-t border-violet-50 bg-slate-50/30 flex items-center justify-between text-xs text-slate-500 shrink-0">
-                                <span>
-                                    Menampilkan {allExams.length} dari total{" "}
-                                    {total}
-                                </span>
-                                <div className="flex gap-1">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="h-7 text-xs"
-                                        disabled={page <= 1}
-                                        onClick={() =>
-                                            setPage(Math.max(1, page - 1))
-                                        }
-                                    >
-                                        Sebelumnya
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="h-7 text-xs"
-                                        disabled={
-                                            allExams.length === 0 ||
-                                            page * limit >= total
-                                        }
-                                        onClick={() => setPage(page + 1)}
-                                    >
-                                        Berikutnya
-                                    </Button>
+                                <span></span>
+                                <div className="flex gap-1 items-center">
+                                    <Pagination
+                                        page={page}
+                                        totalPages={totalPages}
+                                        onPageChange={setPage}
+                                    />
                                 </div>
                             </div>
                         </CardContent>

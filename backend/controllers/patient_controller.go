@@ -3,6 +3,7 @@ package controllers
 import (
 	"dental-app/config"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -172,7 +173,6 @@ func CreatePatient(c *gin.Context) {
 
 func GetPatients(c *gin.Context) {
 	var patients []patientListItem
-
 	query := config.DB.
 		Table("patients p").
 		Select(`
@@ -202,12 +202,34 @@ func GetPatients(c *gin.Context) {
 		query = query.Where("p.institution_id = ?", institutionID)
 	}
 
-	if err := query.Order("p.created_at DESC").Scan(&patients).Error; err != nil {
+	// Pagination params
+	page := 1
+	limit := 20
+	if p := strings.TrimSpace(c.Query("page")); p != "" {
+		if v, err := strconv.Atoi(p); err == nil && v > 0 {
+			page = v
+		}
+	}
+	if l := strings.TrimSpace(c.Query("limit")); l != "" {
+		if v, err := strconv.Atoi(l); err == nil && v > 0 {
+			limit = v
+		}
+	}
+
+	var total int64
+	countQuery := query
+	if err := countQuery.Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to count patients"})
+		return
+	}
+
+	offset := (page - 1) * limit
+	if err := query.Order("p.created_at DESC").Limit(limit).Offset(offset).Scan(&patients).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch patients"})
 		return
 	}
 
-	c.JSON(http.StatusOK, patients)
+	c.JSON(http.StatusOK, gin.H{"items": patients, "total": total})
 }
 
 func GetPatientByID(c *gin.Context) {

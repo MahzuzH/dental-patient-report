@@ -442,7 +442,7 @@ export default function TambahPemeriksaanPage() {
                                 Batal
                             </Button>
                             <Button
-                                className="gap-2 bg-violet-600 hover:bg-violet-700"
+                                className="gap-2 text-white bg-violet-500 hover:bg-violet-600"
                                 onClick={handleSubmit}
                                 disabled={saving}
                             >
