@@ -99,11 +99,16 @@ export default function TambahPemeriksaanPage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
 
-    /* image state */
-    const [imageUpper, setImageUpper] = useState("");
-    const [imageLower, setImageLower] = useState("");
-    const [uploadingUpper, setUploadingUpper] = useState(false);
-    const [uploadingLower, setUploadingLower] = useState(false);
+    /* image types + images state */
+    const [imageTypes, setImageTypes] = useState([]);
+    const [images, setImages] = useState({}); // { typeName: [url] }
+    const [uploadingTypes, setUploadingTypes] = useState({});
+    const humanize = (s) =>
+        s
+            .replace(/_/g, " ")
+            .split(" ")
+            .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : ""))
+            .join(" ");
 
     /* ─── init ─── */
     useEffect(() => {
@@ -122,11 +127,7 @@ export default function TambahPemeriksaanPage() {
             .then((d) => setConditions(Array.isArray(d.data) ? d.data : []))
             .catch(() => {});
 
-        // fetch patients
-        authFetch("/api/patients")
-            .then((r) => r.json())
-            .then((d) => setPatients(Array.isArray(d) ? d : []))
-            .catch(() => {});
+        // fetch patients (moved to debounced effect)
 
         // if edit mode, load existing checkup
         if (isEdit) {
@@ -144,8 +145,7 @@ export default function TambahPemeriksaanPage() {
                         general_notes: d.general_notes || "",
                         status: (d.status || "completed").toLowerCase(),
                     });
-                    if (d.image_upper) setImageUpper(d.image_upper);
-                    if (d.image_lower) setImageLower(d.image_lower);
+                    if (d.images) setImages(d.images || {});
                     setSelectedPatient({
                         id: d.patient_id,
                         full_name: d.patient_name,
@@ -168,7 +168,29 @@ export default function TambahPemeriksaanPage() {
                 .catch(() => navigate("/pemeriksaan"))
                 .finally(() => setLoading(false));
         }
+
+        // fetch available image types
+        fetch("/api/image-types")
+            .then((r) => r.json())
+            .then((d) => setImageTypes(Array.isArray(d) ? d : []))
+            .catch(() => {});
     }, [id, isEdit, navigate]);
+
+    /* ─── patient search effect ─── */
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            // we only search if there's a query or if we need to show the initial list
+            // but always fetching first 25 on mount/empty is good too
+            authFetch(`/api/patients?q=${encodeURIComponent(patientSearch || "")}&limit=25`)
+                .then((r) => r.json())
+                .then((d) => {
+                    const arr = Array.isArray(d) ? d : (d.data || d.items || []);
+                    setPatients(arr);
+                })
+                .catch(() => {});
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [patientSearch]);
 
     /* ─── patient search filter ─── */
     const filteredPatients = useMemo(() => {
@@ -289,12 +311,8 @@ export default function TambahPemeriksaanPage() {
     };
 
     /* ─── image upload helper ─── */
-    const uploadImage = async (file, type) => {
-        const setUploading =
-            type === "upper" ? setUploadingUpper : setUploadingLower;
-        const setImage = type === "upper" ? setImageUpper : setImageLower;
-
-        setUploading(true);
+    const uploadImage = async (file, typeName) => {
+        setUploadingTypes((p) => ({ ...p, [typeName]: true }));
         try {
             const formData = new FormData();
             formData.append("file", file);
@@ -308,26 +326,24 @@ export default function TambahPemeriksaanPage() {
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Upload gagal");
-            setImage(data.url);
+            setImages((p) => ({ ...p, [typeName]: [data.url] }));
         } catch (e) {
-            setError(
-                `Gagal upload foto ${type === "upper" ? "rahang atas" : "rahang bawah"}: ${e.message}`,
-            );
+            setError(`Gagal upload foto (${typeName}): ${e.message}`);
         } finally {
-            setUploading(false);
+            setUploadingTypes((p) => ({ ...p, [typeName]: false }));
         }
     };
 
-    const handleImageSelect = (type) => (e) => {
+    const handleImageSelect = (typeName) => (e) => {
         const file = e.target.files?.[0];
-        if (file) uploadImage(file, type);
+        if (file) uploadImage(file, typeName);
     };
 
-    const handleImageDrop = (type) => (e) => {
+    const handleImageDrop = (typeName) => (e) => {
         e.preventDefault();
         const file = e.dataTransfer.files?.[0];
         if (file && file.type.startsWith("image/")) {
-            uploadImage(file, type);
+            uploadImage(file, typeName);
         }
     };
 
@@ -351,13 +367,18 @@ export default function TambahPemeriksaanPage() {
 
         setSaving(true);
         try {
+            const imagesPayload = Object.entries(images)
+                .map(([type, arr]) => ({
+                    image_type: type,
+                    image_path: arr?.[0] || "",
+                }))
+                .filter((i) => i.image_path);
+
             const payload = {
                 patient_id: form.patient_id,
                 dentist_id: dentistId,
                 checkup_date: form.checkup_date,
                 general_notes: form.general_notes.trim() || "",
-                image_upper: imageUpper || "",
-                image_lower: imageLower || "",
                 status: form.status,
                 entries: Object.entries(entries).map(([tooth, e]) => ({
                     tooth_number: parseInt(tooth, 10),
@@ -365,7 +386,13 @@ export default function TambahPemeriksaanPage() {
                     condition_id: e.condition_id,
                     notes: e.notes || "",
                 })),
-                ...(isEdit ? { replace_entries: true } : {}),
+                images: imagesPayload,
+                ...(isEdit
+                    ? {
+                          replace_entries: true,
+                          replace_images: imagesPayload.length > 0,
+                      }
+                    : {}),
             };
 
             const url = isEdit ? `/api/checkups/${id}` : "/api/checkups";
@@ -464,7 +491,7 @@ export default function TambahPemeriksaanPage() {
                     )}
 
                     {/* ── Content Grid ── */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         {/* ── LEFT COLUMN ── */}
                         <div className="lg:col-span-1 space-y-4">
                             {/* Patient Select */}
@@ -682,132 +709,147 @@ export default function TambahPemeriksaanPage() {
                                         </h3>
                                     </div>
 
-                                    {/* Upper teeth image */}
-                                    <div>
-                                        <Label className="text-slate-600 mb-2 block">
-                                            Rahang Atas
-                                        </Label>
-                                        {imageUpper ? (
-                                            <div className="relative group rounded-xl overflow-hidden border-2 border-violet-200 bg-slate-50">
-                                                <img
-                                                    src={imageUpper}
-                                                    alt="Foto rahang atas"
-                                                    className="w-full h-40 object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                                                    <button
-                                                        type="button"
-                                                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg"
-                                                        onClick={() =>
-                                                            setImageUpper("")
-                                                        }
-                                                    >
-                                                        <X size={16} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <label
-                                                className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed ${
-                                                    uploadingUpper
-                                                        ? "border-violet-300 bg-violet-50"
-                                                        : "border-slate-200 bg-slate-50 hover:border-violet-400 hover:bg-violet-50"
-                                                } cursor-pointer transition-colors py-8`}
-                                                onDragOver={(e) =>
-                                                    e.preventDefault()
-                                                }
-                                                onDrop={handleImageDrop(
-                                                    "upper",
-                                                )}
-                                            >
-                                                <input
-                                                    type="file"
-                                                    accept="image/jpeg,image/png,image/webp"
-                                                    className="hidden"
-                                                    onChange={handleImageSelect(
-                                                        "upper",
-                                                    )}
-                                                    disabled={uploadingUpper}
-                                                />
-                                                {uploadingUpper ? (
-                                                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
-                                                ) : (
-                                                    <Upload
-                                                        size={24}
-                                                        className="text-slate-400"
-                                                    />
-                                                )}
-                                                <span className="text-xs text-slate-400">
-                                                    {uploadingUpper
-                                                        ? "Mengupload..."
-                                                        : "Klik atau seret foto rahang atas"}
-                                                </span>
-                                            </label>
-                                        )}
-                                    </div>
+                                    <div className="space-y-3">
+                                        {(() => {
+                                            const layout = [
+                                                [
+                                                    "extraoral_frontal_rest",
+                                                    "extraoral_frontal_smile",
+                                                    "extraoral_profile",
+                                                ],
+                                                [
+                                                    "intraoral_right_buccal",
+                                                    "intraoral_frontal",
+                                                    "intraoral_left_buccal",
+                                                ],
+                                                [
+                                                    "intraoral_maxillary_occlusal",
+                                                    "intraoral_mandibular_occlusal",
+                                                ],
+                                            ];
 
-                                    {/* Lower teeth image */}
-                                    <div>
-                                        <Label className="text-slate-600 mb-2 block">
-                                            Rahang Bawah
-                                        </Label>
-                                        {imageLower ? (
-                                            <div className="relative group rounded-xl overflow-hidden border-2 border-violet-200 bg-slate-50">
-                                                <img
-                                                    src={imageLower}
-                                                    alt="Foto rahang bawah"
-                                                    className="w-full h-40 object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                                                    <button
-                                                        type="button"
-                                                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg"
-                                                        onClick={() =>
-                                                            setImageLower("")
-                                                        }
-                                                    >
-                                                        <X size={16} />
-                                                    </button>
+                                            return layout.map((row, rowIdx) => (
+                                                <div
+                                                    key={rowIdx}
+                                                    className="flex flex-wrap justify-center gap-2.5 sm:gap-3"
+                                                >
+                                                    {row.map((typeName) => {
+                                                        const tObj =
+                                                            imageTypes.find(
+                                                                (it) =>
+                                                                    it.name ===
+                                                                    typeName,
+                                                            ) || {
+                                                                name: typeName,
+                                                            };
+                                                        const urls =
+                                                            images[tObj.name] ||
+                                                            [];
+                                                        const uploading =
+                                                            !!uploadingTypes[
+                                                                tObj.name
+                                                            ];
+                                                        return (
+                                                            <div
+                                                                key={tObj.name}
+                                                                className="w-[calc(33.333%-0.7rem)] min-w-[70px] sm:min-w-[80px]"
+                                                            >
+                                                                <Label className="text-[9px] sm:text-[12px] font-bold text-slate-500 mb-2 block text-center leading-tight h-7 sm:h-8 flex items-center justify-center px-0.5">
+                                                                    {humanize(
+                                                                        tObj.name,
+                                                                    )}
+                                                                </Label>
+                                                                {urls[0] ? (
+                                                                    <div className="relative group rounded-xl overflow-hidden border-2 border-violet-200 bg-slate-50 aspect-square">
+                                                                        <img
+                                                                            src={
+                                                                                urls[0]
+                                                                            }
+                                                                            alt={
+                                                                                tObj.name
+                                                                            }
+                                                                            className="w-full h-full object-cover"
+                                                                        />
+                                                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                                                            <button
+                                                                                type="button"
+                                                                                className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg"
+                                                                                onClick={() =>
+                                                                                    setImages(
+                                                                                        (
+                                                                                            p,
+                                                                                        ) => {
+                                                                                            const np =
+                                                                                                {
+                                                                                                    ...p,
+                                                                                                };
+                                                                                            delete np[
+                                                                                                tObj
+                                                                                                    .name
+                                                                                            ];
+                                                                                            return np;
+                                                                                        },
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <X
+                                                                                    size={
+                                                                                        16
+                                                                                    }
+                                                                                />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <label
+                                                                        className={`flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-xl border-2 border-dashed aspect-square ${
+                                                                            uploading
+                                                                                ? "border-violet-300 bg-violet-50"
+                                                                                : "border-slate-200 bg-slate-50 hover:border-violet-400 hover:bg-violet-50"
+                                                                        } cursor-pointer transition-colors px-1`}
+                                                                        onDragOver={(
+                                                                            e,
+                                                                        ) =>
+                                                                            e.preventDefault()
+                                                                        }
+                                                                        onDrop={handleImageDrop(
+                                                                            tObj.name,
+                                                                        )}
+                                                                    >
+                                                                        <input
+                                                                            type="file"
+                                                                            accept="image/jpeg,image/png,image/webp"
+                                                                            className="hidden"
+                                                                            onChange={handleImageSelect(
+                                                                                tObj.name,
+                                                                            )}
+                                                                            disabled={
+                                                                                uploading
+                                                                            }
+                                                                        />
+                                                                        {uploading ? (
+                                                                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
+                                                                        ) : (
+                                                                            <Upload
+                                                                                size={
+                                                                                    24
+                                                                                }
+                                                                                className="text-slate-400"
+                                                                            />
+                                                                        )}
+                                                                        <span className="text-[8px] sm:text-[9px] text-slate-400 text-center leading-tight">
+                                                                            {uploading
+                                                                                ? "..."
+                                                                                : "Upload"}
+                                                                        </span>
+                                                                    </label>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
-                                            </div>
-                                        ) : (
-                                            <label
-                                                className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed ${
-                                                    uploadingLower
-                                                        ? "border-violet-300 bg-violet-50"
-                                                        : "border-slate-200 bg-slate-50 hover:border-violet-400 hover:bg-violet-50"
-                                                } cursor-pointer transition-colors py-8`}
-                                                onDragOver={(e) =>
-                                                    e.preventDefault()
-                                                }
-                                                onDrop={handleImageDrop(
-                                                    "lower",
-                                                )}
-                                            >
-                                                <input
-                                                    type="file"
-                                                    accept="image/jpeg,image/png,image/webp"
-                                                    className="hidden"
-                                                    onChange={handleImageSelect(
-                                                        "lower",
-                                                    )}
-                                                    disabled={uploadingLower}
-                                                />
-                                                {uploadingLower ? (
-                                                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
-                                                ) : (
-                                                    <Upload
-                                                        size={24}
-                                                        className="text-slate-400"
-                                                    />
-                                                )}
-                                                <span className="text-xs text-slate-400">
-                                                    {uploadingLower
-                                                        ? "Mengupload..."
-                                                        : "Klik atau seret foto rahang bawah"}
-                                                </span>
-                                            </label>
-                                        )}
+                                            ));
+                                        })()}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -927,7 +969,7 @@ export default function TambahPemeriksaanPage() {
                         </div>
 
                         {/* ── RIGHT COLUMN: Odontogram ── */}
-                        <div className="lg:col-span-2">
+                        <div className="lg:col-span-1">
                             <Card className="border-violet-100 bg-white shadow-sm">
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between mb-6">

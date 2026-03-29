@@ -45,8 +45,7 @@ type reportResponse struct {
 	Gender      string            `json:"gender"`
 	ScanDate    string            `json:"scan_date"`
 	Status      string            `json:"status"`
-	ImageUpper  string            `json:"image_upper"`
-	ImageLower  string            `json:"image_lower"`
+	Images      map[string][]string `json:"images"`
 	Diagnosis   []reportDiagnosis `json:"diagnosis"`
 }
 
@@ -62,10 +61,9 @@ type createCheckupRequest struct {
 	DentistID    string                 `json:"dentist_id" binding:"required"`
 	CheckupDate  string                 `json:"checkup_date" binding:"required"`
 	GeneralNotes string                 `json:"general_notes"`
-	ImageUpper   string                 `json:"image_upper"`
-	ImageLower   string                 `json:"image_lower"`
 	Status       string                 `json:"status"`
 	Entries      []odontogramEntryInput `json:"entries"`
+	Images       []imageInput           `json:"images"`
 }
 
 type updateCheckupRequest struct {
@@ -73,11 +71,16 @@ type updateCheckupRequest struct {
 	DentistID      string                 `json:"dentist_id"`
 	CheckupDate    string                 `json:"checkup_date"`
 	GeneralNotes   string                 `json:"general_notes"`
-	ImageUpper     string                 `json:"image_upper"`
-	ImageLower     string                 `json:"image_lower"`
 	Status         string                 `json:"status"`
 	Entries        []odontogramEntryInput `json:"entries"`
 	ReplaceEntries bool                   `json:"replace_entries"`
+	Images         []imageInput           `json:"images"`
+	ReplaceImages  bool                   `json:"replace_images"`
+}
+
+type imageInput struct {
+	ImageType string `json:"image_type"`
+	ImagePath string `json:"image_path"`
 }
 
 func normalizeStatus(raw string) string {
@@ -297,8 +300,6 @@ func GetReport(c *gin.Context) {
 		Gender      string    `gorm:"column:gender"`
 		CheckupDate time.Time `gorm:"column:checkup_date"`
 		Status      string    `gorm:"column:status"`
-		ImageUpper  string    `gorm:"column:image_upper"`
-		ImageLower  string    `gorm:"column:image_lower"`
 	}
 
 	var row reportRow
@@ -313,8 +314,7 @@ func GetReport(c *gin.Context) {
 			COALESCE(p.gender, '') AS gender,
 			c.checkup_date,
 			c.status,
-			COALESCE(c.image_upper, '') AS image_upper,
-			COALESCE(c.image_lower, '') AS image_lower
+			c.status
 		`).
 		Joins("JOIN patients p ON p.id = c.patient_id").
 		Joins("LEFT JOIN partner_institutions pi ON pi.id = p.institution_id").
@@ -335,8 +335,7 @@ func GetReport(c *gin.Context) {
 		DateOfBirth: row.DateOfBirth,
 		ScanDate:    row.CheckupDate.Format("2006-01-02"),
 		Status:      normalizeStatus(row.Status),
-		ImageUpper:  row.ImageUpper,
-		ImageLower:  row.ImageLower,
+		Images:      map[string][]string{},
 		Diagnosis:   []reportDiagnosis{},
 	}
 
@@ -376,6 +375,24 @@ func GetReport(c *gin.Context) {
 			TreatmentRecommendation: d.TreatmentRecommendation,
 			Symptoms:                d.Symptoms,
 		})
+	}
+
+	// fetch images from checkup_images + image_types
+	type imageRow struct {
+		Type string `gorm:"column:type_name"`
+		Path string `gorm:"column:image_path"`
+	}
+	var imageRows []imageRow
+	_ = config.DB.
+		Table("checkup_images ci").
+		Select("it.name AS type_name, ci.image_path").
+		Joins("JOIN image_types it ON it.id = ci.image_type_id").
+		Where("ci.checkup_id = ?", row.ID).
+		Order("it.id ASC").
+		Scan(&imageRows).Error
+
+	for _, ir := range imageRows {
+		report.Images[ir.Type] = append(report.Images[ir.Type], ir.Path)
 	}
 
 	if len(report.Diagnosis) == 0 {
@@ -420,8 +437,7 @@ func GetCheckupByID(c *gin.Context) {
 		DentistName  string    `gorm:"column:dentist_name" json:"dentist_name"`
 		CheckupDate  time.Time `gorm:"column:checkup_date" json:"-"`
 		GeneralNotes string    `gorm:"column:general_notes" json:"general_notes"`
-		ImageUpper   string    `gorm:"column:image_upper" json:"image_upper"`
-		ImageLower   string    `gorm:"column:image_lower" json:"image_lower"`
+		// images are stored in checkup_images; fetched separately
 		Status       string    `gorm:"column:status" json:"status"`
 		CreatedAt    string    `gorm:"column:created_at" json:"created_at"`
 	}
@@ -448,8 +464,7 @@ func GetCheckupByID(c *gin.Context) {
 			d.full_name AS dentist_name,
 			c.checkup_date,
 			COALESCE(c.general_notes, '') AS general_notes,
-			COALESCE(c.image_upper, '') AS image_upper,
-			COALESCE(c.image_lower, '') AS image_lower,
+			-- images moved to checkup_images
 			c.status,
 			DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i:%s') AS created_at
 		`).
@@ -484,6 +499,25 @@ func GetCheckupByID(c *gin.Context) {
 		return
 	}
 
+	// fetch images for this checkup
+	type imageRow struct {
+		Type string `gorm:"column:type_name"`
+		Path string `gorm:"column:image_path"`
+	}
+	var imageRows []imageRow
+	_ = config.DB.
+		Table("checkup_images ci").
+		Select("it.name AS type_name, ci.image_path").
+		Joins("JOIN image_types it ON it.id = ci.image_type_id").
+		Where("ci.checkup_id = ?", id).
+		Order("it.id ASC").
+		Scan(&imageRows).Error
+
+	images := map[string][]string{}
+	for _, ir := range imageRows {
+		images[ir.Type] = append(images[ir.Type], ir.Path)
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"id":            row.ID,
 		"patient_id":    row.PatientID,
@@ -493,12 +527,25 @@ func GetCheckupByID(c *gin.Context) {
 		"dentist_name":  row.DentistName,
 		"checkup_date":  row.CheckupDate.Format("2006-01-02"),
 		"general_notes": row.GeneralNotes,
-		"image_upper":   row.ImageUpper,
-		"image_lower":   row.ImageLower,
+		"images":        images,
 		"status":        normalizeStatus(row.Status),
 		"created_at":    row.CreatedAt,
 		"entries":       entries,
 	})
+}
+
+// GetImageTypes returns available image types
+func GetImageTypes(c *gin.Context) {
+	type trow struct {
+		ID   int    `gorm:"column:id" json:"id"`
+		Name string `gorm:"column:name" json:"name"`
+	}
+	var rows []trow
+	if err := config.DB.Table("image_types").Select("id, name").Order("id ASC").Scan(&rows).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch image types"})
+		return
+	}
+	c.JSON(http.StatusOK, rows)
 }
 
 func CreateCheckup(c *gin.Context) {
@@ -512,8 +559,6 @@ func CreateCheckup(c *gin.Context) {
 	req.DentistID = strings.TrimSpace(req.DentistID)
 	req.CheckupDate = strings.TrimSpace(req.CheckupDate)
 	req.GeneralNotes = strings.TrimSpace(req.GeneralNotes)
-	req.ImageUpper = strings.TrimSpace(req.ImageUpper)
-	req.ImageLower = strings.TrimSpace(req.ImageLower)
 	req.Status = parseStatusForDB(req.Status)
 
 	if req.PatientID == "" || req.DentistID == "" || req.CheckupDate == "" {
@@ -560,11 +605,11 @@ func CreateCheckup(c *gin.Context) {
 
 	insertCheckupQuery := `
 		INSERT INTO checkups
-			(id, patient_id, dentist_id, checkup_date, general_notes, image_upper, image_lower, status)
+			(id, patient_id, dentist_id, checkup_date, general_notes, status)
 		VALUES
-			(UUID(), ?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), ?)
+			(UUID(), ?, ?, ?, NULLIF(?, ''), ?)
 	`
-	if err := tx.Exec(insertCheckupQuery, req.PatientID, req.DentistID, req.CheckupDate, req.GeneralNotes, req.ImageUpper, req.ImageLower, req.Status).Error; err != nil {
+	if err := tx.Exec(insertCheckupQuery, req.PatientID, req.DentistID, req.CheckupDate, req.GeneralNotes, req.Status).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create checkup"})
 		return
@@ -613,6 +658,40 @@ func CreateCheckup(c *gin.Context) {
 		}
 	}
 
+	// insert checkup images if provided
+	if len(req.Images) > 0 {
+		for _, img := range req.Images {
+			imgType := strings.TrimSpace(img.ImageType)
+			imgPath := strings.TrimSpace(img.ImagePath)
+			if imgType == "" || imgPath == "" {
+				tx.Rollback()
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image entry"})
+				return
+			}
+
+			// resolve image_type id
+			var typeID int
+			err := tx.Table("image_types").Select("id").Where("name = ?", imgType).Limit(1).Scan(&typeID).Error
+			if err != nil || typeID == 0 {
+				tx.Rollback()
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image type: " + imgType})
+				return
+			}
+
+			insertImgQuery := `
+				INSERT INTO checkup_images
+					(id, checkup_id, image_type_id, image_path)
+				VALUES
+					(UUID(), ?, ?, ?)
+			`
+			if err := tx.Exec(insertImgQuery, checkupID, typeID, imgPath).Error; err != nil {
+				tx.Rollback()
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert checkup images"})
+				return
+			}
+		}
+	}
+
 	if err := tx.Commit().Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to commit transaction"})
 		return
@@ -641,8 +720,6 @@ func UpdateCheckup(c *gin.Context) {
 	req.DentistID = strings.TrimSpace(req.DentistID)
 	req.CheckupDate = strings.TrimSpace(req.CheckupDate)
 	req.GeneralNotes = strings.TrimSpace(req.GeneralNotes)
-	req.ImageUpper = strings.TrimSpace(req.ImageUpper)
-	req.ImageLower = strings.TrimSpace(req.ImageLower)
 	if strings.TrimSpace(req.Status) != "" {
 		req.Status = parseStatusForDB(req.Status)
 	}
@@ -706,12 +783,6 @@ func UpdateCheckup(c *gin.Context) {
 	if req.GeneralNotes != "" {
 		updates["general_notes"] = req.GeneralNotes
 	}
-	if req.ImageUpper != "" {
-		updates["image_upper"] = req.ImageUpper
-	}
-	if req.ImageLower != "" {
-		updates["image_lower"] = req.ImageLower
-	}
 	if req.Status != "" {
 		updates["status"] = req.Status
 	}
@@ -762,6 +833,41 @@ func UpdateCheckup(c *gin.Context) {
 			if err := tx.Exec(insertEntryQuery, id, e.ToothNumber, surface, conditionID, notes).Error; err != nil {
 				tx.Rollback()
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create odontogram entries"})
+				return
+			}
+		}
+	}
+
+	// handle images replacement if requested
+	if req.ReplaceImages {
+		if err := tx.Table("checkup_images").Where("checkup_id = ?", id).Delete(nil).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to replace checkup images"})
+			return
+		}
+		for _, img := range req.Images {
+			imgType := strings.TrimSpace(img.ImageType)
+			imgPath := strings.TrimSpace(img.ImagePath)
+			if imgType == "" || imgPath == "" {
+				tx.Rollback()
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image entry"})
+				return
+			}
+			var typeID int
+			if err := tx.Table("image_types").Select("id").Where("name = ?", imgType).Limit(1).Scan(&typeID).Error; err != nil || typeID == 0 {
+				tx.Rollback()
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image type: " + imgType})
+				return
+			}
+			insertImgQuery := `
+				INSERT INTO checkup_images
+					(id, checkup_id, image_type_id, image_path)
+				VALUES
+					(UUID(), ?, ?, ?)
+			`
+			if err := tx.Exec(insertImgQuery, id, typeID, imgPath).Error; err != nil {
+				tx.Rollback()
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert checkup images"})
 				return
 			}
 		}

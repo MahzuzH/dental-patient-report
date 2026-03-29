@@ -17,6 +17,7 @@ func SetupRoutes(r *gin.Engine) {
 
 		// public
 		api.GET("/diseases", controllers.GetDiseases)
+		api.GET("/image-types", controllers.GetImageTypes)
 		api.GET("/report/:id", controllers.GetReport)
 
 		// protected

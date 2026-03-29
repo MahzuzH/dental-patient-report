@@ -25,6 +25,18 @@ export default function PublicReportPage() {
         });
     };
 
+    const firstImage = (v) => {
+        if (!v) return null;
+        if (Array.isArray(v)) return v.length ? v[0] : null;
+        return (
+            v
+                .toString()
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)[0] || null
+        );
+    };
+
     if (loading) {
         return (
             <div className="flex h-screen items-center justify-center bg-slate-50">
@@ -230,47 +242,77 @@ export default function PublicReportPage() {
                     </div>
                 </div>
 
-                {/* Foto Gigi: single card dengan 2 row (Upper / Lower) - tampil setelah card peta gigi */}
-                <div className="mt-6 rounded-[2.5rem] border border-slate-100 bg-white p-4 shadow-sm">
-                    <div className="mb-3">
-                        <h3 className="text-lg font-bold text-slate-900 ml-4">
-                            Foto Pemeriksaan
-                        </h3>
+                {/* Foto Pemeriksaan: Centered 3-3-2 Layout */}
+                <div className="mt-6 rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm">
+                    <div className="mb-8 flex items-center justify-between">
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-900">
+                                Foto Pemeriksaan
+                            </h3>
+                            <p className="text-xs text-slate-400 mt-1">
+                                Dokumentasi visual hasil pemindaian digital
+                            </p>
+                        </div>
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
-                        <div className="rounded-md overflow-hidden border border-slate-100 bg-slate-50 p-2">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-                                Upper
-                            </p>
-                            {report.image_upper ? (
-                                <img
-                                    src={report.image_upper}
-                                    alt={`Upper teeth - report ${id}`}
-                                    className="w-full h-full object-cover rounded-md shadow-sm"
-                                />
-                            ) : (
-                                <div className="flex h-full items-center justify-center text-slate-400 italic">
-                                    Belum ada foto upper.
-                                </div>
-                            )}
-                        </div>
 
-                        <div className="rounded-md overflow-hidden border border-slate-100 bg-slate-50 p-2">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-                                Lower
-                            </p>
-                            {report.image_lower ? (
-                                <img
-                                    src={report.image_lower}
-                                    alt={`Lower teeth - report ${id}`}
-                                    className="w-full h-full object-cover rounded-md shadow-sm"
-                                />
-                            ) : (
-                                <div className="flex h-full items-center justify-center text-slate-400 italic">
-                                    Belum ada foto lower.
-                                </div>
-                            )}
-                        </div>
+                    <div className="space-y-8">
+                        {[
+                            [
+                                "extraoral_frontal_rest",
+                                "extraoral_frontal_smile",
+                                "extraoral_profile",
+                            ],
+                            [
+                                "intraoral_right_buccal",
+                                "intraoral_frontal",
+                                "intraoral_left_buccal",
+                            ],
+                            [
+                                "intraoral_maxillary_occlusal",
+                                "intraoral_mandibular_occlusal",
+                            ],
+                        ].map((row, rowIdx) => (
+                            <div
+                                key={rowIdx}
+                                className="flex flex-wrap justify-center gap-4 sm:gap-6"
+                            >
+                                {row.map((typeName) => {
+                                    // Handle both map structure and flat properties
+                                    const imgUrl = firstImage(
+                                        report.images?.[typeName] || 
+                                        report[typeName] || 
+                                        (typeName === "intraoral_maxillary_occlusal" ? report.image_upper : null) ||
+                                        (typeName === "intraoral_mandibular_occlusal" ? report.image_lower : null)
+                                    );
+                                    
+                                    return (
+                                        <div
+                                            key={typeName}
+                                            className="w-[calc(33.333%-1rem)] min-w-[90px] group"
+                                        >
+                                            <p className="mb-2 text-center text-[9px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-violet-500 transition-colors h-7 flex items-center justify-center leading-tight">
+                                                {typeName.replace(/_/g, " ")}
+                                            </p>
+                                            <div className="relative aspect-square overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 shadow-sm transition-all group-hover:scale-[1.05] group-hover:shadow-md group-hover:border-violet-100">
+                                                {imgUrl ? (
+                                                    <img
+                                                        src={imgUrl}
+                                                        alt={typeName}
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-full items-center justify-center p-2 text-center">
+                                                        <span className="text-[10px] italic text-slate-300">
+                                                            N/A
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <br />
