@@ -5,30 +5,30 @@ const About = () => {
     const features = [
         {
             icon: <Stethoscope size={28} className="text-blue-500" />,
-            title: "Professional Service",
+            title: "Layanan Profesional",
             description:
-                "Our certified dentists provide rigorous, standards-compliant care tailored to your unique oral health needs.",
+                "Dokter gigi tersertifikasi kami memberikan perawatan berstandar tinggi yang disesuaikan dengan kebutuhan kesehatan mulut Anda.",
             bgColor: "bg-blue-50",
         },
         {
             icon: <Microscope size={28} className="text-[#ff91a4]" />,
-            title: "Modern Equipment",
+            title: "Alat Modern",
             description:
-                "We utilize cutting-edge medical technologies and advanced dental tools to ensure precise and painless treatments.",
+                "Kami didukung oleh teknologi medis terkini dan peralatan gigi canggih untuk memastikan kenyamanan dan ketepatan setiap tindakan.",
             bgColor: "bg-rose-50",
         },
         {
             icon: <HeartHandshake size={28} className="text-pink-500" />,
-            title: "Comfortable Treatment",
+            title: "Perawatan Nyaman",
             description:
-                "Experience a relaxing atmosphere designed to ease anxiety and turn your dental visits into pleasant experiences.",
+                "Nikmati suasana rileks yang dirancang untuk mengurangi rasa cemas dan menjadikan kunjungan gigi Anda pengalaman yang menyenangkan.",
             bgColor: "bg-pink-50",
         },
         {
             icon: <Award size={28} className="text-orange-500" />,
-            title: "Top-Tier Quality",
+            title: "Kualitas Terbaik",
             description:
-                "We only use premium materials and proven techniques to ensure lasting and beautiful results for every patient.",
+                "Kami hanya menggunakan material premium dan teknik teruji untuk memastikan hasil yang indah dan tahan lama bagi setiap pasien.",
             bgColor: "bg-orange-50",
         },
     ];
@@ -39,16 +39,14 @@ const About = () => {
                 {/* Section Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h4 className="font-roboto text-[#ff91a4] font-semibold tracking-wider uppercase text-sm mb-3">
-                        About Us
+                        Tentang Kami
                     </h4>
                     <h2 className="font-roboto text-3xl md:text-4xl font-bold text-white mb-6 relative inline-block">
-                        Why Choose Sefya Dental Studio?
+                        Mengapa Memilih Sefya Dental Studio?
                         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#ff91a4] rounded-full"></div>
                     </h2>
                     <p className="text-[#b9b9b9] text-lg">
-                        We are dedicated to providing the highest quality dental
-                        care in a patient-friendly environment. Your comfort and
-                        health are our top priorities.
+                        Kami berdedikasi untuk menyediakan perawatan gigi berkualitas tinggi dalam lingkungan yang ramah pasien. Kenyamanan dan kesehatan Anda adalah prioritas kami.
                     </p>
                 </div>
 
@@ -95,20 +93,16 @@ const About = () => {
                     <div className="grid md:grid-cols-2 gap-12 items-center relative z-10 text-white">
                         <div>
                             <h3 className="font-roboto text-2xl md:text-3xl font-bold mb-4 drop-shadow-sm">
-                                Committed to Excellence in Dental Care
+                                Berkomitmen pada Keunggulan Perawatan Gigi
                             </h3>
                             <p className="text-white/90 mb-6 leading-relaxed">
-                                At Sefya Dental Studio, we believe that a
-                                healthy smile is a beautiful smile. Our clinic
-                                was founded on the principle of providing
-                                transparent, ethical, and high-quality dental
-                                services to our community.
+                                Di Sefya Dental Studio, kami percaya bahwa senyum sehat adalah senyum yang indah. Klinik kami hadir untuk memberikan layanan gigi yang transparan, etis, dan berkualitas bagi masyarakat.
                             </p>
                             <ul className="space-y-3">
                                 {[
-                                    "Comprehensive Examinations",
-                                    "Painless Procedures",
-                                    "Affordable Care Plans",
+                                    "Pemeriksaan Menyeluruh",
+                                    "Prosedur Tanpa Rasa Sakit",
+                                    "Biaya Perawatan Terjangkau",
                                 ].map((item, i) => (
                                     <li
                                         key={i}
@@ -131,8 +125,7 @@ const About = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-6">
                                 <p className="text-white font-medium drop-shadow-md">
-                                    Modern sterilization machines ensuring your
-                                    safety.
+                                    Mesin sterilisasi modern untuk menjamin keamanan Anda.
                                 </p>
                             </div>
                         </div>

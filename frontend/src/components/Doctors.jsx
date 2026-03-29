@@ -6,16 +6,32 @@ const Doctors = () => {
         {
             name: "drg. Sefya Firdaus",
             role: "General Dentist",
-            description: "FKG Universitas Jendral Ahmad Yani Bandung 2016",
             image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
             accent: "bg-[#ff91a4]",
         },
         {
             name: "drg. Sarah Andintama",
             role: "General Dentist",
-            description: "FKG Universitas Jendral Ahmad Yani Bandung 2019",
-            image: "https://images.unsplash.com/photo-1594824436998-05ea266b38a5?auto=format&fit=crop&q=80&w=400&h=400",
-            accent: "bg-blue-500",
+            image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
+            accent: "bg-[#ff91a4]",
+        },
+        {
+            name: "Vidia Eka Putri",
+            role: "Dental Assistant",
+            image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
+            accent: "bg-green-500",
+        },
+        {
+            name: "Ika",
+            role: "Dental Assistant",
+            image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
+            accent: "bg-green-500",
+        },
+        {
+            name: "Maya",
+            role: "Admin",
+            image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
+            accent: "bg-yellow-500",
         },
     ];
 
@@ -28,54 +44,93 @@ const Doctors = () => {
                 {/* Section Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h4 className="font-roboto text-[#ff91a4] font-semibold tracking-wider uppercase text-sm mb-3">
-                        Meet Our Team
+                        Kenali Tim Kami
                     </h4>
                     <h2 className="font-roboto text-3xl md:text-4xl font-bold text-white mb-6 relative inline-block">
-                        Our Dental Experts
+                        Ahli Gigi Kami
                         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#ff91a4] rounded-full"></div>
                     </h2>
                     <p className="text-[#b9b9b9] text-lg">
-                        Our highly qualified and experienced dental
-                        professionals are here to provide you with the best
-                        possible treatment.
+                        Tenaga profesional kami yang berpengalaman siap
+                        memberikan perawatan terbaik sesuai kebutuhan Anda.
                     </p>
                 </div>
 
-                {/* Doctors Grid */}
-                <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
-                    {doctors.map((doctor, index) => (
-                        <div
-                            key={index}
-                            className="bg-[#2f2f2f]/80 backdrop-blur-md shadow-black/20 rounded-[2rem] p-6 shadow-sm border border-[#4e4e4e]/40 hover:shadow-xl transition-all duration-300 group flex flex-col sm:flex-row gap-6 items-center sm:items-start"
-                        >
-                            {/* Doctor Image */}
-                            <div className="relative w-40 h-40 shrink-0">
-                                <div
-                                    className={`absolute inset-0 ${doctor.accent} rounded-full opacity-0 group-hover:opacity-10 scale-110 transition-all duration-500`}
-                                ></div>
-                                <img
-                                    src={doctor.image}
-                                    alt={doctor.name}
-                                    className="w-full h-full object-cover rounded-full border-4 border-white shadow-md relative z-10 transition-transform duration-500 group-hover:scale-105"
-                                />
+                <div className="max-w-7xl mx-auto space-y-12">
+                    {/* Top Row: 2 Doctors */}
+                    <div className="flex flex-wrap justify-center gap-10">
+                        {doctors.slice(0, 2).map((doctor, index) => (
+                            <div
+                                key={index}
+                                className="group relative flex flex-col items-center w-full sm:w-[calc(50%-2.5rem)] lg:w-[calc(33.333%-2.5rem)] max-w-sm"
+                            >
+                                {/* Card Body */}
+                                <div className="relative w-full aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 bg-[#1f1f1f]/40 shadow-2xl transition-all duration-700 group-hover:shadow-[#ff91a4]/10 group-hover:-translate-y-4">
+                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/95 z-10"></div>
+                                    <div
+                                        className={`absolute -top-24 -right-24 w-64 h-64 ${doctor.accent} opacity-0 group-hover:opacity-20 blur-[80px] transition-opacity duration-1000`}
+                                    ></div>
+                                    <img
+                                        src={doctor.image}
+                                        alt={doctor.name}
+                                        className="absolute inset-0 w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
+                                    />
+                                    <div className="absolute bottom-0 left-0 right-0 p-8 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                        <div className="inline-flex items-center rounded-full bg-white/10 backdrop-blur-md px-3 py-1 border border-white/20 mb-3">
+                                            <span
+                                                className={`h-1.5 w-1.5 rounded-full ${doctor.accent} mr-2 shadow-[0_0_8px] shadow-current animate-pulse`}
+                                            ></span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+                                                {doctor.role}
+                                            </span>
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-white tracking-tight leading-tight">
+                                            {doctor.name}
+                                        </h3>
+                                    </div>
+                                </div>
                             </div>
+                        ))}
+                    </div>
+                    <br />
+                    <br />
 
-                            {/* Doctor Info */}
-                            <div className="flex-1 text-center sm:text-left mt-2">
-                                <h3 className="font-roboto text-2xl font-bold text-white mb-1">
-                                    {doctor.name}
-                                </h3>
-                                <p
-                                    className={`text-sm font-semibold mb-4 inline-block px-3 py-1 rounded-full bg-rose-50 text-[#d67a8a]`}
-                                >
-                                    {doctor.role}
-                                </p>
-                                <p className="text-[#b9b9b9] leading-relaxed mb-6 text-sm">
-                                    {doctor.description}
-                                </p>
+                    {/* Bottom Row: 3 Team Members */}
+                    <div className="flex flex-wrap justify-center gap-10">
+                        {doctors.slice(2, 5).map((doctor, index) => (
+                            <div
+                                key={index}
+                                className="group relative flex flex-col items-center w-full sm:w-[calc(50%-2.5rem)] lg:w-[calc(33.333%-2.5rem)] max-w-sm"
+                            >
+                                {/* Card Body (Copied Style) */}
+                                <div className="relative w-full aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 bg-[#1f1f1f]/40 shadow-2xl transition-all duration-700 group-hover:shadow-[#ff91a4]/10 group-hover:-translate-y-4">
+                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/95 z-10"></div>
+                                    <div
+                                        className={`absolute -top-24 -right-24 w-64 h-64 ${doctor.accent} opacity-0 group-hover:opacity-20 blur-[80px] transition-opacity duration-1000`}
+                                    ></div>
+                                    <img
+                                        src={doctor.image}
+                                        alt={doctor.name}
+                                        className="absolute inset-0 w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
+                                    />
+
+                                    <div className="absolute bottom-0 left-0 right-0 p-8 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                        <div className="inline-flex items-center rounded-full bg-white/10 backdrop-blur-md px-3 py-1 border border-white/20 mb-3">
+                                            <span
+                                                className={`h-1.5 w-1.5 rounded-full ${doctor.accent} mr-2 shadow-[0_0_8px] shadow-current animate-pulse`}
+                                            ></span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+                                                {doctor.role}
+                                            </span>
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-white tracking-tight leading-tight">
+                                            {doctor.name}
+                                        </h3>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>

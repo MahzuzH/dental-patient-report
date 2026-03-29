@@ -6,20 +6,23 @@ const Contact = () => {
         "https://wa.me/6288975262351?text=Halo%20saya%20ingin%20booking%20perawatan%20di%20Sefya%20Dental%20Studio";
 
     return (
-        <section id="contact" className="py-24 bg-[#2f2f2f]/80 backdrop-blur-md shadow-black/20">
+        <section
+            id="contact"
+            className="py-24 bg-[#2f2f2f]/80 backdrop-blur-md shadow-black/20"
+        >
             <div className="container mx-auto px-4 md:px-6">
                 {/* Section Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h4 className="font-roboto text-[#ff91a4] font-semibold tracking-wider uppercase text-sm mb-3">
-                        Get In Touch
+                        Hubungi Kami
                     </h4>
                     <h2 className="font-roboto text-3xl md:text-4xl font-bold text-white mb-6 relative inline-block">
-                        Our Location & Contacts
+                        Lokasi & Kontak
                         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#ff91a4] rounded-full"></div>
                     </h2>
                     <p className="text-[#b9b9b9] text-lg">
-                        Have questions or want to make an appointment? We are
-                        ready to help you achieve your perfect smile.
+                        Punya pertanyaan atau ingin buat janji temu? Tim kami
+                        siap membantu Anda mewujudkan senyum impian.
                     </p>
                 </div>
 
@@ -30,7 +33,7 @@ const Contact = () => {
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#ff91a4]/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
                         <h3 className="font-roboto text-2xl font-bold mb-8 relative z-10">
-                            Contact Information
+                            Informasi Kontak
                         </h3>
 
                         <div className="space-y-8 relative z-10 flex-1">
@@ -43,7 +46,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-roboto font-semibold text-lg mb-1">
-                                        Clinic Address
+                                        Alamat Klinik
                                     </h4>
                                     <p className="text-rose-100 leading-relaxed">
                                         Jl. Subang Pamanukan,
@@ -64,7 +67,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-roboto font-semibold text-lg mb-1">
-                                        Phone Number
+                                        Nomor Telepon
                                     </h4>
                                     <p className="text-rose-100">
                                         +62 889-7526-2351
@@ -81,14 +84,14 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-roboto font-semibold text-lg mb-1">
-                                        Operational Hours
+                                        Jam Operasional
                                     </h4>
                                     <p className="text-rose-100">
-                                        Everyday
+                                        Setiap Hari
                                         <br />
-                                        Morning: 08:00 - 12:00
+                                        Pagi: 08:00 - 12:00
                                         <br />
-                                        Afternoon: 15:00 - 20:00
+                                        Sore/Malam: 15:00 - 20:00
                                     </p>
                                 </div>
                             </div>
@@ -96,7 +99,7 @@ const Contact = () => {
 
                         <div className="mt-10 relative z-10">
                             <p className="text-rose-200 text-sm mb-4">
-                                Want to book immediately?
+                                Ingin booking segera?
                             </p>
                             <a
                                 href={waLink}

@@ -33,7 +33,7 @@ export function Sidebar({ active }) {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        navigate("/", { replace: true });
+        navigate("/login", { replace: true });
     };
 
     useEffect(() => {

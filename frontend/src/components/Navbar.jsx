@@ -15,10 +15,10 @@ const Navbar = () => {
     }, []);
 
     const navLinks = [
-        { name: "Home", href: "#home" },
-        { name: "About", href: "#about" },
-        { name: "Doctors", href: "#doctors" },
-        { name: "Contact", href: "#contact" },
+        { name: "Beranda", href: "#home" },
+        { name: "Tentang", href: "#about" },
+        { name: "Tim Medis", href: "#doctors" },
+        { name: "Kontak", href: "#contact" },
     ];
 
     const waLink =
@@ -45,9 +45,11 @@ const Navbar = () => {
                         onClick={(e) => handleSmoothScroll(e, "#home")}
                         className="flex items-center gap-2 group"
                     >
-                        <div className="w-10 h-10 rounded-xl bg-[#ff91a4] flex items-center justify-center text-white font-bold text-xl group-hover:bg-[#d67a8a] transition-colors">
-                            S
-                        </div>
+                        <img
+                            src="/logo.jpg"
+                            alt="Logo Sefya Dental Studio"
+                            className="w-10 h-10 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform"
+                        />
                         <span
                             className={`font-montserrat text-xl font-bold tracking-tight text-white`}
                         >
@@ -78,7 +80,7 @@ const Navbar = () => {
                                 className="flex items-center gap-2 text-[#ff91a4] font-medium hover:text-rose-800 transition-colors"
                             >
                                 <UserRound size={18} />
-                                <span>Login</span>
+                                <span>Masuk</span>
                             </Link>
                             <a
                                 href={waLink}
@@ -87,7 +89,7 @@ const Navbar = () => {
                                 className="flex items-center gap-2 bg-[#ff91a4] hover:bg-[#d67a8a] text-white px-5 py-2.5 rounded-full font-medium transition-all shadow-md shadow-[#ff91a4]/20 hover:-translate-y-0.5"
                             >
                                 <Phone size={18} />
-                                <span>Book Now</span>
+                                <span>Buat Janji</span>
                             </a>
                         </div>
                     </div>
@@ -130,7 +132,7 @@ const Navbar = () => {
                         className="flex items-center justify-center gap-2 text-[#ff91a4] font-medium py-2 border border-rose-200 rounded-lg hover:bg-rose-50 transition-colors"
                     >
                         <UserRound size={18} />
-                        <span>Login</span>
+                        <span>Masuk</span>
                     </Link>
                     <a
                         filter="_blank"

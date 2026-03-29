@@ -12,7 +12,11 @@ export default function LoginPage() {
             {/* LEFT SIDE */}
             <div className="w-1/2 flex flex-col justify-center pl-40 bg-[#ffffff]">
                 <p className="text-md text-purple-600 mb-4 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
+                    <img
+                        src="/logo.jpg"
+                        alt="Logo"
+                        className="w-8 h-8 rounded-lg"
+                    />
                     Sefya Dental Studio
                 </p>
 

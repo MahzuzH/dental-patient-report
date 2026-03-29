@@ -8,17 +8,19 @@ const Footer = () => {
                 <div className="grid md:grid-cols-4 gap-8">
                     <div className="md:col-span-2">
                         <div className="flex items-center gap-2 mb-6">
-                            <div className="w-8 h-8 rounded-lg bg-[#ff91a4] flex items-center justify-center text-white font-bold text-lg">
-                                S
-                            </div>
+                            <img
+                                src="/logo.jpg"
+                                alt="Logo"
+                                className="w-8 h-8 rounded-lg object-cover"
+                            />
                             <span className="text-xl font-bold text-white tracking-tight">
                                 Sefya Dental Studio
                             </span>
                         </div>
                         <p className="text-[#858585] max-w-sm mb-6 leading-relaxed">
-                            Providing premium, professional, and comfortable
-                            dental care. We bring bright smiles to our community
-                            with care and dedication.
+                            Menghadirkan perawatan gigi premium, profesional,
+                            dan nyaman. Kami memberikan senyum terbaik bagi
+                            masyarakat dengan dedikasi sepenuh hati.
                         </p>
                     </div>
 
@@ -54,7 +56,7 @@ const Footer = () => {
 
                     <div>
                         <h4 className="font-roboto text-white font-bold mb-6 uppercase tracking-wider text-sm">
-                            Quick Links
+                            Menu Cepat
                         </h4>
                         <ul className="space-y-3">
                             <li>
@@ -62,7 +64,7 @@ const Footer = () => {
                                     href="#home"
                                     className="hover:text-rose-400 transition-colors"
                                 >
-                                    Home
+                                    Beranda
                                 </a>
                             </li>
                             <li>
@@ -70,7 +72,7 @@ const Footer = () => {
                                     href="#about"
                                     className="hover:text-rose-400 transition-colors"
                                 >
-                                    About Us
+                                    Tentang Kami
                                 </a>
                             </li>
                             <li>
@@ -78,7 +80,7 @@ const Footer = () => {
                                     href="#doctors"
                                     className="hover:text-rose-400 transition-colors"
                                 >
-                                    Our Doctors
+                                    Tim Medis
                                 </a>
                             </li>
                             <li>
@@ -86,7 +88,7 @@ const Footer = () => {
                                     href="#contact"
                                     className="hover:text-rose-400 transition-colors"
                                 >
-                                    Contact
+                                    Kontak
                                 </a>
                             </li>
                         </ul>
@@ -96,8 +98,8 @@ const Footer = () => {
 
             <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#a0a0a0]">
                 <p>
-                    &copy; {new Date().getFullYear()} Sefya Dental Studio. All
-                    rights reserved.
+                    &copy; {new Date().getFullYear()} Sefya Dental Studio.
+                    Seluruh hak cipta dilindungi.
                 </p>
             </div>
         </footer>

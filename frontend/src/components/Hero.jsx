@@ -17,24 +17,18 @@ const Hero = () => {
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     {/* Text Content */}
                     <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff91a4]/20 text-white font-medium text-sm mb-6 shadow-sm border border-[#ff91a4]/50">
-                            <ShieldCheck size={16} className="text-[#ff91a4]" />
-                            <span>Premium Dental Care in Town</span>
-                        </div>
+                            <span>Layanan Gigi Premium & Terpercaya</span>
 
                         <h1 className="font-montserrat text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 tracking-tight">
-                            Create Your{" "}
+                            Wujudkan{" "}
                             <span className="text-[#ff91a4]">
-                                Perfect Smile
+                                Senyum Impian
                             </span>{" "}
-                            With Professional Care
+                            Anda Bersama Kami
                         </h1>
 
                         <p className="text-lg text-white mb-8 leading-relaxed max-w-lg drop-shadow-sm">
-                            Experience the highest standard of dental care in a
-                            modern, comfortable environment. Our team of experts
-                            is dedicated to bringing out your best and brightest
-                            smile.
+                            Nikmati standar perawatan gigi terbaik dengan teknologi modern dan suasana yang nyaman. Tim ahli kami berdedikasi untuk memberikan senyum terbaik dan tercerah Anda.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4">
@@ -45,19 +39,8 @@ const Hero = () => {
                                 className="inline-flex items-center justify-center gap-2 bg-[#ff91a4] hover:bg-[#d67a8a] text-white min-w-[200px] px-8 py-4 rounded-full font-semibold text-lg transition-all shadow-lg shadow-[#ff91a4]/30 hover:-translate-y-1"
                             >
                                 <CalendarCheck size={20} />
-                                <span>Book Now (WhatsApp)</span>
+                                <span>Booking Sekarang (WhatsApp)</span>
                             </a>
-
-                            <Link
-                                to="/login"
-                                className="inline-flex items-center justify-center gap-2 bg-transparent hover:bg-[#4a4a4a] text-white border border-[#b9b9b9] min-w-[160px] px-8 py-4 rounded-full font-semibold text-lg transition-all shadow-sm hover:shadow hover:-translate-y-1"
-                            >
-                                <span>Login</span>
-                                <ArrowRight
-                                    size={20}
-                                    className="text-[#ff91a4]"
-                                />
-                            </Link>
                         </div>
 
                         {/* Quick Stats */}
@@ -67,23 +50,23 @@ const Hero = () => {
                                     3+
                                 </p>
                                 <p className="text-sm text-[#a0a0a0] font-medium">
-                                    Years Experience
+                                    Tahun Pengalaman
                                 </p>
                             </div>
                             <div>
                                 <p className="text-3xl font-bold text-white mb-1">
-                                    3k+
+                                    3rb+
                                 </p>
                                 <p className="text-sm text-[#a0a0a0] font-medium">
-                                    Happy Patients
+                                    Pasien Puas
                                 </p>
                             </div>
                             <div>
                                 <p className="text-3xl font-bold text-white mb-1">
-                                    Modern
+                                    Alat
                                 </p>
                                 <p className="text-sm text-[#a0a0a0] font-medium">
-                                    Equipment
+                                    Modern & Canggih
                                 </p>
                             </div>
                         </div>
@@ -113,10 +96,10 @@ const Hero = () => {
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-white">
-                                        100% Guaranteed
+                                        Terjamin 100%
                                     </p>
                                     <p className="text-xs text-[#a0a0a0] font-medium">
-                                        Safe & Sterile
+                                        Aman & Steril
                                     </p>
                                 </div>
                             </div>
