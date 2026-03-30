@@ -1,5 +1,4 @@
 import React from "react";
-import { Linkedin, Twitter, Mail } from "lucide-react";
 
 const Doctors = () => {
     const doctors = [
