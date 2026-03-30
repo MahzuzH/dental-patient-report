@@ -91,7 +91,7 @@ const Contact = () => {
                                         <br />
                                         Pagi: 08:00 - 12:00
                                         <br />
-                                        Sore/Malam: 15:00 - 20:00
+                                        Sore: 15:00 - 20:00
                                     </p>
                                 </div>
                             </div>

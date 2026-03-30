@@ -5,31 +5,31 @@ const Doctors = () => {
     const doctors = [
         {
             name: "drg. Sefya Firdaus",
-            role: "General Dentist",
+            role: "Dokter Gigi",
             image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
             accent: "bg-[#ff91a4]",
         },
         {
             name: "drg. Sarah Andintama",
-            role: "General Dentist",
+            role: "Dokter Gigi",
             image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
             accent: "bg-[#ff91a4]",
         },
         {
             name: "Vidia Eka Putri",
-            role: "Dental Assistant",
+            role: "Asisten Dokter Gigi",
             image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
             accent: "bg-green-500",
         },
         {
             name: "Ika",
-            role: "Dental Assistant",
+            role: "Asisten Dokter Gigi",
             image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
             accent: "bg-green-500",
         },
         {
             name: "Maya",
-            role: "Admin",
+            role: "Administrasi",
             image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400&h=400",
             accent: "bg-yellow-500",
         },

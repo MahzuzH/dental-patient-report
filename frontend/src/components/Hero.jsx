@@ -17,7 +17,7 @@ const Hero = () => {
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     {/* Text Content */}
                     <div className="max-w-2xl">
-                            <span>Layanan Gigi Premium & Terpercaya</span>
+                        <span>Layanan Gigi Premium & Terpercaya</span>
 
                         <h1 className="font-montserrat text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 tracking-tight">
                             Wujudkan{" "}
@@ -28,7 +28,10 @@ const Hero = () => {
                         </h1>
 
                         <p className="text-lg text-white mb-8 leading-relaxed max-w-lg drop-shadow-sm">
-                            Nikmati standar perawatan gigi terbaik dengan teknologi modern dan suasana yang nyaman. Tim ahli kami berdedikasi untuk memberikan senyum terbaik dan tercerah Anda.
+                            Nikmati perawatan gigi dengan dukungan teknologi
+                            modern dan suasana yang nyaman. Tim kami siap
+                            membantu anda untuk mendapatkan senyum yang sehat
+                            dan percaya diri.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4">
@@ -55,7 +58,7 @@ const Hero = () => {
                             </div>
                             <div>
                                 <p className="text-3xl font-bold text-white mb-1">
-                                    3rb+
+                                    3.000+
                                 </p>
                                 <p className="text-sm text-[#a0a0a0] font-medium">
                                     Pasien Puas
@@ -88,7 +91,7 @@ const Hero = () => {
 
                             {/* Floating Badge */}
                             <div
-                                className="absolute bottom-10 left-[-20px] bg-transparent rounded-2xl p-4 shadow-xl z-20 flex items-center gap-4 border border-[#4e4e4e]/40 animate-bounce"
+                                className="absolute bottom-10 left-[-1px] bg-slate-900/80 backdrop-blur-md rounded-2xl p-4 shadow-xl z-20 flex items-center gap-4 border border-white/10 animate-bounce"
                                 style={{ animationDuration: "3s" }}
                             >
                                 <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600">

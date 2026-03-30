@@ -3,12 +3,15 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import Doctors from '../components/Doctors';
+import Gallery from '../components/Gallery';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 
 const Home = () => {
   return (
     <div className="min-h-screen bg-[#3a3a3a] text-[#b9b9b9] font-opensans selection:bg-[#ff91a4] selection:text-white relative z-0">
+      <SEO />
       
       {/* Dynamic Ambient Background */}
       <div className="fixed inset-0 z-[-1] pointer-events-none">
@@ -23,6 +26,7 @@ const Home = () => {
         <Hero />
         <About />
         <Doctors />
+        <Gallery />
         <Contact />
       </main>
       <Footer />

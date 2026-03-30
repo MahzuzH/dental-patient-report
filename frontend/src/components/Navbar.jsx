@@ -18,6 +18,7 @@ const Navbar = () => {
         { name: "Beranda", href: "#home" },
         { name: "Tentang", href: "#about" },
         { name: "Tim Medis", href: "#doctors" },
+        { name: "Galeri", href: "#gallery" },
         { name: "Kontak", href: "#contact" },
     ];
 

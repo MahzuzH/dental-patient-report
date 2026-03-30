@@ -7,14 +7,14 @@ const About = () => {
             icon: <Stethoscope size={28} className="text-blue-500" />,
             title: "Layanan Profesional",
             description:
-                "Dokter gigi tersertifikasi kami memberikan perawatan berstandar tinggi yang disesuaikan dengan kebutuhan kesehatan mulut Anda.",
+                "Dokter gigi tersertifikasi kami siap memberikan perawatan berkualitas yang disesuaikan dengan kebutuhan kesehatan mulut anda.",
             bgColor: "bg-blue-50",
         },
         {
             icon: <Microscope size={28} className="text-[#ff91a4]" />,
             title: "Alat Modern",
             description:
-                "Kami didukung oleh teknologi medis terkini dan peralatan gigi canggih untuk memastikan kenyamanan dan ketepatan setiap tindakan.",
+                "Didukung oleh teknologi medis terkini dan perlatan gigi modern untuk memastikan seriap tindakan dilakukan dengan nyaman dan tepat.",
             bgColor: "bg-rose-50",
         },
         {
@@ -28,7 +28,7 @@ const About = () => {
             icon: <Award size={28} className="text-orange-500" />,
             title: "Kualitas Terbaik",
             description:
-                "Kami hanya menggunakan material premium dan teknik teruji untuk memastikan hasil yang indah dan tahan lama bagi setiap pasien.",
+                "Kami hanya meggunakan bahan berkualitas dan yang telah teruji teknik untuk memberikan hasil yang indah serta tahan lama.",
             bgColor: "bg-orange-50",
         },
     ];
@@ -46,7 +46,10 @@ const About = () => {
                         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#ff91a4] rounded-full"></div>
                     </h2>
                     <p className="text-[#b9b9b9] text-lg">
-                        Kami berdedikasi untuk menyediakan perawatan gigi berkualitas tinggi dalam lingkungan yang ramah pasien. Kenyamanan dan kesehatan Anda adalah prioritas kami.
+                        Kami menghadirkan layanan perawatan gigi berkualitas
+                        dengan lingkungan yang nyaman dan pelayanan yang ramah.
+                        Kenyamanan serta kesehatan gigi anda menjadi prioritas
+                        kami.
                     </p>
                 </div>
 
@@ -96,7 +99,11 @@ const About = () => {
                                 Berkomitmen pada Keunggulan Perawatan Gigi
                             </h3>
                             <p className="text-white/90 mb-6 leading-relaxed">
-                                Di Sefya Dental Studio, kami percaya bahwa senyum sehat adalah senyum yang indah. Klinik kami hadir untuk memberikan layanan gigi yang transparan, etis, dan berkualitas bagi masyarakat.
+                                Di Sefya Dental Studio, kami percaya bahwa
+                                senyum sehat adalah senyum yang indah. Klinik
+                                kami hadir untuk memberikan layanan gigi yang
+                                transparan, etis, dan berkualitas bagi
+                                masyarakat.
                             </p>
                             <ul className="space-y-3">
                                 {[
@@ -125,7 +132,8 @@ const About = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-6">
                                 <p className="text-white font-medium drop-shadow-md">
-                                    Mesin sterilisasi modern untuk menjamin keamanan Anda.
+                                    Mesin sterilisasi modern untuk menjamin
+                                    keamanan Anda.
                                 </p>
                             </div>
                         </div>
