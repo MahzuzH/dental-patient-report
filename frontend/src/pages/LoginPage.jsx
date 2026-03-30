@@ -1,26 +1,35 @@
 import loginImg from "../assets/login.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLoginPageLogic } from "../hooks/useLoginPageLogic";
 
 export default function LoginPage() {
     const { email, setEmail, password, setPassword, loading, handleLogin } =
         useLoginPageLogic();
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        setIsLoaded(true);
+    }, []);
 
     return (
-        <div className="h-screen w-screen flex font-poppins">
+        <div className="h-screen w-screen flex font-poppins bg-[#3a3a3a] overflow-hidden">
             {/* LEFT SIDE */}
-            <div className="w-1/2 flex flex-col justify-center pl-40 bg-[#ffffff]">
-                <p className="text-md text-purple-600 mb-4 flex items-center gap-2">
+            <div 
+                className={`w-1/2 flex flex-col justify-center pl-40 transition-all duration-1000 transform ${
+                    isLoaded ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
+                }`}
+            >
+                <p className="text-md text-[#ff91a4] mb-4 flex items-center gap-2 font-medium">
                     <img
                         src="/logo.jpg"
                         alt="Logo"
-                        className="w-8 h-8 rounded-lg"
+                        className="w-8 h-8 rounded-lg shadow-lg shadow-[#ff91a4]/20"
                     />
                     Sefya Dental Studio
                 </p>
 
-                <h1 className="text-4xl font-semibold mb-6 leading-tight">
+                <h1 className="text-4xl font-semibold mb-6 leading-tight text-white">
                     Holla, <br /> Welcome Back
                 </h1>
 
@@ -30,28 +39,33 @@ export default function LoginPage() {
                         e.preventDefault();
                         handleLogin();
                     }}
+                    className={`space-y-4 transition-all duration-1000 delay-300 transform ${
+                        isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                    }`}
                 >
                     {/* EMAIL */}
-                    <input
-                        autoFocus
-                        type="email"
-                        placeholder="Email"
-                        className="w-full max-w-md border border-gray-300 rounded-md px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                    <div className="max-w-md">
+                        <input
+                            autoFocus
+                            type="email"
+                            placeholder="Email"
+                            className="w-full bg-[#4a4a4a] border border-[#b9b9b9]/30 rounded-xl px-4 py-3 placeholder-[#b9b9b9] text-white focus:outline-none focus:ring-2 focus:ring-[#ff91a4]/50 focus:border-[#ff91a4] transition-all"
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
 
                     {/* PASSWORD */}
-                    <div className="relative mb-6 max-w-md">
+                    <div className="relative max-w-md">
                         <input
                             type={showPassword ? "text" : "password"}
                             placeholder="Password"
-                            className="w-full max-w-md border border-gray-300 rounded-md px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                            className="w-full bg-[#4a4a4a] border border-[#b9b9b9]/30 rounded-xl px-4 py-3 pr-12 placeholder-[#b9b9b9] text-white focus:outline-none focus:ring-2 focus:ring-[#ff91a4]/50 focus:border-[#ff91a4] transition-all"
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword((s) => !s)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-md text-purple-600 hover:bg-purple-50 focus:outline-none"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-[#ff91a4] hover:bg-[#ff91a4]/10 rounded-full transition-colors focus:outline-none"
                             aria-label={
                                 showPassword
                                     ? "Sembunyikan password"
@@ -99,32 +113,44 @@ export default function LoginPage() {
                             )}
                         </button>
                     </div>
-                    <br />
 
-                    {/* BUTTON */}
-                    <button
-                        type="submit"
-                        disabled={loading || !email || !password}
-                        className="w-32 bg-purple-600 text-white py-3 rounded-md hover:bg-purple-700 transition disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-400 disabled:cursor-not-allowed"
-                    >
-                        {loading ? "Loading..." : "Sign In"}
-                    </button>
+                    <div className="pt-2">
+                        {/* BUTTON */}
+                        <button
+                            type="submit"
+                            disabled={loading || !email || !password}
+                            className="w-40 bg-[#ff91a4] text-white py-3 rounded-xl hover:bg-[#ff7a91] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#ff91a4]/30 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[#ff91a4] disabled:cursor-not-allowed font-medium"
+                        >
+                            {loading ? "Loading..." : "Sign In"}
+                        </button>
+                    </div>
                 </form>
                 {/* 🔥 FORM END */}
             </div>
 
-            <div className="w-1/2 h-full bg-[#ffffff] flex items-center justify-center">
-                {/* WRAPPER (biar ada space masuk) */}
-                <div className="w-[95%] h-[95%] rounded-3xl overflow-hidden shadow-xl">
+            <div className={`w-1/2 h-full flex items-center justify-center p-8 transition-all duration-1000 delay-500 transform ${
+                isLoaded ? "scale-100 opacity-100" : "scale-95 opacity-0"
+            }`}>
+                {/* WRAPPER */}
+                <div className="w-full h-full rounded-[2.5rem] overflow-hidden shadow-2xl relative border-8 border-[#ffffff10] group">
                     <div
-                        className="w-full h-full bg-cover bg-center"
+                        className="w-full h-full bg-cover bg-center transition-transform duration-[20s] ease-linear group-hover:scale-110"
                         style={{
                             backgroundImage: `url(${loginImg})`,
                             backgroundPosition: "35% center",
                         }}
                     ></div>
+                    {/* Darker Overlay for better contrast */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#3a3a3a]/40 to-transparent pointer-events-none"></div>
+                    
+                    {/* Abstract design elements */}
+                    <div className="absolute bottom-10 left-10 text-white/80 max-w-xs animate-pulse">
+                        <p className="text-xl font-light italic">"A smile is the universal welcome."</p>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
+
+
