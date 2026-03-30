@@ -9,37 +9,54 @@ const Gallery = () => {
             category: "Fasilitas",
         },
         {
-            url: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?auto=format&fit=crop&q=80&w=800",
+            url: "https://images.unsplash.com/photo-1629909606604-4a1511634442?auto=format&fit=crop&q=80&w=800",
             title: "Ruang Tunggu Nyaman",
             category: "Fasilitas",
         },
         {
-            url: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&q=80&w=800",
+            url: "https://images.unsplash.com/photo-1629909606604-4a1511634442?auto=format&fit=crop&q=80&w=800",
             title: "Senyum Pasien",
             category: "Hasil Perawatan",
         },
         {
-            url: "https://images.unsplash.com/photo-1559839734-2b71f1e9cbee?auto=format&fit=crop&q=80&w=800",
+            url: "https://images.unsplash.com/photo-1629909606604-4a1511634442?auto=format&fit=crop&q=80&w=800",
             title: "Konsultasi Dokter",
             category: "Pelayanan",
         },
         {
-            url: "https://images.unsplash.com/photo-1445527815219-ecbfec67492e?auto=format&fit=crop&q=80&w=800",
+            url: "https://images.unsplash.com/photo-1629909606604-4a1511634442?auto=format&fit=crop&q=80&w=800",
             title: "Interior Klinik",
             category: "Fasilitas",
         },
         {
-            url: "https://images.unsplash.com/photo-1504813184591-015923d1413f?auto=format&fit=crop&q=80&w=800",
+            url: "https://images.unsplash.com/photo-1629909606604-4a1511634442?auto=format&fit=crop&q=80&w=800",
             title: "Teknologi Terkini",
             category: "Fasilitas",
         },
     ];
 
     return (
-        <section id="gallery" className="py-24 bg-transparent border-b border-[#4e4e4e]/40 relative">
-            <div className="container mx-auto px-4 md:px-6">
+        <section
+            id="gallery"
+            className="py-24 bg-transparent border-b border-[#4e4e4e]/40 relative overflow-hidden"
+        >
+            <style>
+                {`
+                @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .animate-marquee {
+                    display: flex;
+                    width: max-content;
+                    animation: marquee 30s linear infinite;
+                }
+                `}
+            </style>
+
+            <div className="container mx-auto px-4 md:px-6 mb-16">
                 {/* Section Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16">
+                <div className="text-center max-w-3xl mx-auto">
                     <h4 className="font-roboto text-[#ff91a4] font-semibold tracking-wider uppercase text-sm mb-3">
                         Galeri Kami
                     </h4>
@@ -48,16 +65,20 @@ const Gallery = () => {
                         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#ff91a4] rounded-full"></div>
                     </h2>
                     <p className="text-[#b9b9b9] text-lg">
-                        Lihat lebih dekat kenyamanan fasilitas dan dedikasi kami dalam menghadirkan senyum sehat bagi setiap pasien.
+                        Lihat lebih dekat kenyamanan fasilitas dan dedikasi kami
+                        dalam menghadirkan senyum sehat bagi setiap pasien.
                     </p>
                 </div>
+            </div>
 
-                {/* Gallery Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    {images.map((image, index) => (
+            {/* Marquee Container */}
+            <div className="relative group/marquee">
+                <div className="animate-marquee gap-6 md:gap-8 px-4">
+                    {/* Double the images for seamless loop */}
+                    {[...images, ...images].map((image, index) => (
                         <div
                             key={index}
-                            className="group relative overflow-hidden rounded-3xl aspect-[4/3] border border-[#4e4e4e]/40 bg-[#2f2f2f]/80 shadow-lg hover:shadow-[#ff91a4]/10 transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+                            className="relative overflow-hidden rounded-3xl w-[300px] md:w-[400px] aspect-[4/3] border border-[#4e4e4e]/40 bg-[#2f2f2f]/80 shadow-lg hover:shadow-[#ff91a4]/10 transition-all duration-500 cursor-pointer group shrink-0"
                         >
                             {/* Image */}
                             <img
@@ -74,12 +95,15 @@ const Gallery = () => {
                                     </span>
                                     <h3 className="text-white text-xl font-bold mb-1 flex items-center gap-2">
                                         {image.title}
-                                        <ZoomIn size={18} className="text-[#ff91a4] opacity-0 group-hover:opacity-100 transition-opacity delay-200" />
+                                        <ZoomIn
+                                            size={18}
+                                            className="text-[#ff91a4] opacity-0 group-hover:opacity-100 transition-opacity delay-200"
+                                        />
                                     </h3>
                                 </div>
                             </div>
 
-                            {/* Decorative Corner Icon (Optional) */}
+                            {/* Decorative Corner Icon */}
                             <div className="absolute top-4 right-4 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <Camera size={16} className="text-white" />
                             </div>
@@ -87,12 +111,17 @@ const Gallery = () => {
                     ))}
                 </div>
 
-                {/* Action Suggestion */}
-                <div className="mt-16 text-center">
-                    <p className="text-[#b9b9b9] italic">
-                        "Kenyamanan Anda adalah prioritas utama kami di setiap langkah perawatan."
-                    </p>
-                </div>
+                {/* Gradient Fades for Smooth Edges */}
+                <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#3a3a3a] to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#3a3a3a] to-transparent z-10 pointer-events-none"></div>
+            </div>
+
+            {/* Action Suggestion */}
+            <div className="mt-16 text-center container mx-auto px-4">
+                <p className="text-[#b9b9b9] italic">
+                    "Kenyamanan Anda adalah prioritas utama kami di setiap
+                    langkah perawatan."
+                </p>
             </div>
         </section>
     );
