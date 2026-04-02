@@ -32,17 +32,17 @@ function getConditionCards(diagnosis = []) {
                 label: "Sehat",
                 badge: "Sangat Baik",
                 cardClass:
-                    "rounded-3xl bg-emerald-600 text-white shadow-xl shadow-emerald-200 ring-1 ring-emerald-500",
+                    "rounded-2xl bg-emerald-600/90 text-white shadow-xl shadow-emerald-900/30 border border-emerald-500/40",
                 iconWrapClass:
-                    "flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm",
+                    "flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm",
             },
             oralHygiene: {
                 label: "Bagus",
                 badge: "Terjaga",
                 cardClass:
-                    "rounded-3xl bg-slate-100 text-slate-900 shadow-sm ring-1 ring-slate-200/50",
+                    "rounded-2xl bg-[#2e2e2e]/70 backdrop-blur-md text-white border border-[#4e4e4e]/40 shadow-lg shadow-black/10",
                 iconWrapClass:
-                    "flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm",
+                    "flex h-12 w-12 items-center justify-center rounded-2xl bg-[#353535] shadow-sm",
             },
         };
     }
@@ -59,51 +59,51 @@ function getConditionCards(diagnosis = []) {
             label: "Perlu Perawatan",
             badge: "Prioritas Tinggi",
             cardClass:
-                "rounded-3xl bg-rose-600 text-white shadow-xl shadow-rose-200 ring-1 ring-rose-500",
+                "rounded-2xl bg-rose-600/90 text-white shadow-xl shadow-rose-900/30 border border-rose-500/40",
             iconWrapClass:
-                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm",
+                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm",
         };
         oralHygiene = {
             label: "Kurang",
             badge: "Perlu Ditingkatkan",
             cardClass:
-                "rounded-3xl bg-amber-100 text-amber-900 shadow-sm ring-1 ring-amber-200",
+                "rounded-2xl bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-lg shadow-black/10",
             iconWrapClass:
-                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm",
+                "flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 shadow-sm",
         };
     } else if (hasMedium) {
         dentalCondition = {
             label: "Cukup",
             badge: "Perlu Perhatian",
             cardClass:
-                "rounded-3xl bg-violet-600 text-white shadow-xl shadow-violet-200 ring-1 ring-violet-500",
+                "rounded-2xl bg-[#ff91a4]/90 text-white shadow-xl shadow-[#ff91a4]/20 border border-[#ff91a4]/40",
             iconWrapClass:
-                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm",
+                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm",
         };
         oralHygiene = {
             label: "Cukup",
             badge: "Kontrol Rutin",
             cardClass:
-                "rounded-3xl bg-slate-100 text-slate-900 shadow-sm ring-1 ring-slate-200/50",
+                "rounded-2xl bg-[#2e2e2e]/70 backdrop-blur-md text-white border border-[#4e4e4e]/40 shadow-lg shadow-black/10",
             iconWrapClass:
-                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm",
+                "flex h-12 w-12 items-center justify-center rounded-2xl bg-[#353535] shadow-sm",
         };
     } else {
         dentalCondition = {
             label: "Baik",
             badge: "Stabil",
             cardClass:
-                "rounded-3xl bg-emerald-600 text-white shadow-xl shadow-emerald-200 ring-1 ring-emerald-500",
+                "rounded-2xl bg-emerald-600/90 text-white shadow-xl shadow-emerald-900/30 border border-emerald-500/40",
             iconWrapClass:
-                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm",
+                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm",
         };
         oralHygiene = {
             label: "Bagus",
             badge: "Terjaga",
             cardClass:
-                "rounded-3xl bg-slate-100 text-slate-900 shadow-sm ring-1 ring-slate-200/50",
+                "rounded-2xl bg-[#2e2e2e]/70 backdrop-blur-md text-white border border-[#4e4e4e]/40 shadow-lg shadow-black/10",
             iconWrapClass:
-                "flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm",
+                "flex h-12 w-12 items-center justify-center rounded-2xl bg-[#353535] shadow-sm",
         };
     }
 
