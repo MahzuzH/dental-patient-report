@@ -144,7 +144,7 @@ export default function PublicReportPage() {
             />
 
             {/* ── Sticky Top Bar ────────────────────────────────────── */}
-            <div className="sticky top-0 z-40 border-b border-[#4e4e4e]/40 bg-[#2a2a2a]/[0.97] px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 z-40 border-b border-[#4e4e4e]/40 bg-[#2a2a2a]/[0.97] px-4 sm:px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="h-2.5 w-2.5 rounded-full bg-[#ff91a4] shadow-sm shadow-[#ff91a4]/50"></div>
                     <span className="text-sm font-bold tracking-tight text-white uppercase font-montserrat">
@@ -157,7 +157,7 @@ export default function PublicReportPage() {
                 </div>
             </div>
 
-            <main className="mx-auto max-w-2xl px-6 pt-10 pb-16 relative z-10">
+            <main className="mx-auto max-w-4xl px-2 sm:px-6 pt-8 sm:pt-10 pb-16 relative z-10">
                 {/* ── Page Header ───────────────────────────────────── */}
                 <section className="mb-12 text-center animate-[fadeInUp_0.6s_ease-out]">
                     <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-[#ff91a4]/10 border border-[#ff91a4]/20">
@@ -177,7 +177,7 @@ export default function PublicReportPage() {
                 </section>
 
                 {/* ── Profile Card (Glassmorphism) ──────────────────── */}
-                <div className="mb-8 overflow-hidden rounded-2xl border border-[#4e4e4e]/40 bg-[#2e2e2e] p-6 shadow-xl shadow-black/10 animate-[fadeInUp_0.6s_ease-out_0.1s_both]" style={{ contain: 'content' }}>
+                <div className="mb-8 overflow-hidden rounded-2xl border border-[#4e4e4e]/40 bg-[#2e2e2e] p-4 sm:p-6 shadow-xl shadow-black/10 animate-[fadeInUp_0.6s_ease-out_0.1s_both]" style={{ contain: 'content' }}>
                     <div className="flex items-baseline justify-between mb-6">
                         <div className="flex items-center gap-2">
                             <Shield size={16} className="text-[#ff91a4]" />
@@ -206,7 +206,13 @@ export default function PublicReportPage() {
                             {
                                 icon: <Calendar size={12} />,
                                 label: "Usia / Kelamin",
-                                value: `${report.age} Tahun / ${report.gender || "-"}`,
+                                value: `${report.age} Tahun / ${
+                                    report.gender?.toLowerCase() === "male"
+                                        ? "Laki-laki"
+                                        : report.gender?.toLowerCase() === "female"
+                                        ? "Perempuan"
+                                        : report.gender || "-"
+                                }`,
                             },
                             {
                                 icon: <MapPin size={12} />,
@@ -282,7 +288,7 @@ export default function PublicReportPage() {
                 </div>
 
                 {/* ── Tooth Map ─────────────────────────────────────── */}
-                <div className="mb-8 overflow-hidden rounded-2xl border border-[#4e4e4e]/40 bg-[#2e2e2e] p-8 shadow-xl shadow-black/10 animate-[fadeInUp_0.6s_ease-out_0.3s_both]" style={{ contain: 'content' }}>
+                <div className="mb-8 overflow-hidden rounded-2xl border border-[#4e4e4e]/40 bg-[#2e2e2e] p-3 sm:p-8 shadow-xl shadow-black/10 animate-[fadeInUp_0.6s_ease-out_0.3s_both]" style={{ contain: 'content' }}>
                     <div className="mb-8 flex items-center justify-between">
                         <div>
                             <div className="flex items-center gap-2 mb-1">
@@ -306,9 +312,9 @@ export default function PublicReportPage() {
                         </div>
                     </div>
 
-                    <div className="relative mx-auto w-full pb-12">
+                    <div className="relative mx-auto w-full pb-10">
                         <div className="flex flex-col gap-6 w-full items-center">
-                            <div className="w-full px-2">
+                            <div className="w-full">
                                 <ToothMap
                                     diagnosis={report.diagnosis || []}
                                 />
@@ -356,7 +362,7 @@ export default function PublicReportPage() {
                 </div>
 
                 {/* ── Foto Pemeriksaan ──────────────────────────────── */}
-                <div className="mb-8 rounded-2xl border border-[#4e4e4e]/40 bg-[#2e2e2e] p-8 shadow-xl shadow-black/10 animate-[fadeInUp_0.6s_ease-out_0.4s_both]" style={{ contain: 'content' }}>
+                <div className="mb-8 rounded-2xl border border-[#4e4e4e]/40 bg-[#2e2e2e] p-4 sm:p-8 shadow-xl shadow-black/10 animate-[fadeInUp_0.6s_ease-out_0.4s_both]" style={{ contain: 'content' }}>
                     <div className="mb-8 flex items-center justify-between">
                         <div>
                             <div className="flex items-center gap-2 mb-1">
