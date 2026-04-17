@@ -81,3 +81,7 @@ temp/
 *.bak
 *.cache
 *.tmp
+
+# AI Agents & Skills
+.agents/
+.claude/
