@@ -1,6 +1,50 @@
 import loginImg from "../assets/login.png";
 import { useState, useEffect } from "react";
+import { preload } from "react-dom";
 import { useLoginPageLogic } from "../hooks/useLoginPageLogic";
+
+// Hoist static JSX to avoid re-creation on every render
+const ShowIcon = (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-5 h-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.96 9.96 0 012.768-6.818M6.18 6.18A9.956 9.956 0 0112 5c5.523 0 10 4.477 10 10 0 1.06-.163 2.084-.468 3.04M3 3l18 18"
+        />
+    </svg>
+);
+
+const HideIcon = (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-5 h-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+        />
+        <circle
+            cx="12"
+            cy="12"
+            r="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+        />
+    </svg>
+);
 
 export default function LoginPage() {
     const { email, setEmail, password, setPassword, loading, handleLogin } =
@@ -10,6 +54,11 @@ export default function LoginPage() {
 
     useEffect(() => {
         setIsLoaded(true);
+    }, []);
+
+    // Preload heavy background image for LCP optimization
+    useEffect(() => {
+        preload(loginImg, { as: "image" });
     }, []);
 
     return (
@@ -72,45 +121,7 @@ export default function LoginPage() {
                                     : "Lihat password"
                             }
                         >
-                            {showPassword ? (
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="w-5 h-5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.96 9.96 0 012.768-6.818M6.18 6.18A9.956 9.956 0 0112 5c5.523 0 10 4.477 10 10 0 1.06-.163 2.084-.468 3.04M3 3l18 18"
-                                    />
-                                </svg>
-                            ) : (
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="w-5 h-5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                    />
-                                    <circle
-                                        cx="12"
-                                        cy="12"
-                                        r="3"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                    />
-                                </svg>
-                            )}
+                            {showPassword ? ShowIcon : HideIcon}
                         </button>
                     </div>
 

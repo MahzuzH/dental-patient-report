@@ -8,16 +8,16 @@ import (
 )
 
 func main() {
-    r := gin.Default()
+	r := gin.Default()
 
 	config.ConnectDB()
 	routes.SetupRoutes(r)
 
-    r.GET("/api/health", func(c *gin.Context) {
-        c.JSON(200, gin.H{
-            "message": "API running",
-        })
-    })
+	r.GET("/api/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "API running",
+		})
+	})
 
-    r.Run(":8080")
+	r.Run(":8080")
 }

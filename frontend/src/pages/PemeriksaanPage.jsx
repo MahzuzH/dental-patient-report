@@ -13,8 +13,8 @@ import {
     Pencil,
     Eye,
 } from "lucide-react";
-import { QRCodeCanvas } from "qrcode.react"; // Keep this import
-import { useEffect } from "react"; // Only keep useEffect
+import { useEffect, Suspense, lazy } from "react";
+const QRCodeDisplay = lazy(() => import("@/components/QRCodeDisplay"));
 import Pagination from "@/components/ui/pagination";
 import {
     Dialog,
@@ -308,20 +308,9 @@ export default function PemeriksaanPage() {
                     <div className="flex flex-col items-center justify-center gap-6 py-4">
                         <div className="rounded-2xl border-4 border-violet-100 bg-white p-4 shadow-xl shadow-violet-100/50">
                             {qrUrl && (
-                                <QRCodeCanvas
-                                    value={qrUrl}
-                                    size={200}
-                                    level="H"
-                                    includeMargin={false}
-                                    imageSettings={{
-                                        src: "/favicon.ico",
-                                        x: undefined,
-                                        y: undefined,
-                                        height: 40,
-                                        width: 40,
-                                        excavate: true,
-                                    }}
-                                />
+                                <Suspense fallback={<div className="w-[200px] h-[200px] flex items-center justify-center bg-slate-50"><span className="text-slate-400 text-xs">Memuat QR...</span></div>}>
+                                    <QRCodeDisplay url={qrUrl} />
+                                </Suspense>
                             )}
                         </div>
 

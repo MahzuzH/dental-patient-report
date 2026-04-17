@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
-import About from '../components/About';
-import Doctors from '../components/Doctors';
-import Gallery from '../components/Gallery';
-import Contact from '../components/Contact';
-import Footer from '../components/Footer';
 import SEO from '../components/SEO';
+
+const About = lazy(() => import('../components/About'));
+const Doctors = lazy(() => import('../components/Doctors'));
+const Gallery = lazy(() => import('../components/Gallery'));
+const Contact = lazy(() => import('../components/Contact'));
+const Footer = lazy(() => import('../components/Footer'));
 
 const Home = () => {
   return (
@@ -24,12 +25,16 @@ const Home = () => {
       <Navbar />
       <main className="relative z-10">
         <Hero />
-        <About />
-        <Doctors />
-        <Gallery />
-        <Contact />
+        <Suspense fallback={<div className="h-64 flex items-center justify-center text-[#ff91a4]">Loading content...</div>}>
+          <About />
+          <Doctors />
+          <Gallery />
+          <Contact />
+        </Suspense>
       </main>
-      <Footer />
+      <Suspense fallback={<div className="h-32"></div>}>
+        <Footer />
+      </Suspense>
     </div>
   );
 };

@@ -1,32 +1,29 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import useSWR from "swr";
 
-const authFetch = (url, opts = {}) =>
-    fetch(url, {
-        ...opts,
+const fetcher = async ([url, token]) => {
+    const res = await fetch(url, {
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            ...(opts.headers || {}),
+            Authorization: `Bearer ${token}`,
         },
     });
+    if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Gagal memuat data API");
+    }
+    return res.json();
+};
 
 export function usePatientPageLogic() {
     const navigate = useNavigate();
-    const [patients, setPatients] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
-
     const [viewPatient, setViewPatient] = useState(null);
 
-    // pagination state (server-side capable)
+    // pagination state
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(20);
-    const [total, setTotal] = useState(0);
-
-    const cacheRef = useRef(new Map());
-    const controllerRef = useRef(null);
     const [debouncedQuery, setDebouncedQuery] = useState("");
 
     // debounce searchQuery -> debouncedQuery
@@ -35,73 +32,40 @@ export function usePatientPageLogic() {
         return () => clearTimeout(t);
     }, [searchQuery]);
 
-    const fetchPatients = async (q, pageNum = 1, limitNum = 20) => {
-        setLoading(true);
-        try {
-            const key = `${q || ""}|${pageNum}|${limitNum}`;
-            if (cacheRef.current.has(key)) {
-                const cached = cacheRef.current.get(key);
-                if (cached && cached.items) {
-                    setPatients(cached.items);
-                    setTotal(cached.total || cached.items.length);
-                } else {
-                    setPatients(Array.isArray(cached) ? cached : []);
-                    setTotal(Array.isArray(cached) ? cached.length : 0);
-                }
-                setLoading(false);
-                return;
-            }
+    const token = localStorage.getItem("token");
+    const url = `/api/patients?q=${encodeURIComponent(debouncedQuery || "")}&page=${page}&limit=${limit}`;
 
-            if (controllerRef.current) {
-                controllerRef.current.abort();
-            }
-            controllerRef.current = new AbortController();
+    const { data: rawData, error: swrError, isLoading } = useSWR(
+        token ? [url, token] : null,
+        fetcher
+    );
 
-            const url = `/api/patients?q=${encodeURIComponent(q || "")}&page=${pageNum}&limit=${limitNum}`;
-            const res = await authFetch(url, {
-                signal: controllerRef.current.signal,
-            });
-            const data = await res.json();
-            if (!res.ok)
-                throw new Error(data.error || "Gagal memuat data pasien");
-            let items = [];
-            let totalCount = 0;
-            if (Array.isArray(data)) {
-                items = data;
-                totalCount = data.length;
-            } else if (data && data.items) {
-                items = data.items;
-                totalCount = data.total || items.length;
-            }
-            cacheRef.current.set(key, { items, total: totalCount });
-            setPatients(items);
-            setTotal(totalCount);
-        } catch (e) {
-            if (e.name === "AbortError") return;
-            setError(e.message);
-        } finally {
-            setLoading(false);
+    const error = swrError?.message || null;
+    const loading = isLoading;
+
+    let patients = [];
+    let total = 0;
+    if (rawData) {
+        if (Array.isArray(rawData)) {
+            patients = rawData;
+            total = rawData.length;
+        } else if (rawData.items) {
+            patients = rawData.items;
+            total = rawData.total || rawData.items.length;
         }
-    };
+    }
 
     // when debounced query changes, reset to first page
     useEffect(() => {
         setPage(1);
     }, [debouncedQuery]);
 
-    // fetch whenever query/page/limit changes (and ensure auth)
+    // verify auth
     useEffect(() => {
-        const token = localStorage.getItem("token");
         if (!token) {
             navigate("/", { replace: true });
-            return;
         }
-        fetchPatients(debouncedQuery, page, limit);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedQuery, page, limit, navigate]);
-
-    // compute visible patients
-    // Backend returns paged `items`, so `patients` already contains current page.
+    }, [token, navigate]);
     const visible = useMemo(() => patients, [patients]);
 
     return {
