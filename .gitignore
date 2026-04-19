@@ -83,5 +83,6 @@ temp/
 *.tmp
 
 # AI Agents & Skills
+.agent/
 .agents/
-.claude/
+.claude/
