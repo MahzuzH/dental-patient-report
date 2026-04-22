@@ -181,10 +181,12 @@ export default function TambahPemeriksaanPage() {
         const timer = setTimeout(() => {
             // we only search if there's a query or if we need to show the initial list
             // but always fetching first 25 on mount/empty is good too
-            authFetch(`/api/patients?q=${encodeURIComponent(patientSearch || "")}&limit=25`)
+            authFetch(
+                `/api/patients?q=${encodeURIComponent(patientSearch || "")}&limit=25`,
+            )
                 .then((r) => r.json())
                 .then((d) => {
-                    const arr = Array.isArray(d) ? d : (d.data || d.items || []);
+                    const arr = Array.isArray(d) ? d : d.data || d.items || [];
                     setPatients(arr);
                 })
                 .catch(() => {});
@@ -293,13 +295,17 @@ export default function TambahPemeriksaanPage() {
 
         let path = "";
         if (shape === "incisor") {
-            path = "M 7 5 C 6 5 6 7 6 9 C 6 13 9 14 9 16 L 10 21 C 10 23 14 23 14 21 L 15 16 C 15 14 18 13 18 9 C 18 7 18 5 17 5 Z";
+            path =
+                "M 7 5 C 6 5 6 7 6 9 C 6 13 9 14 9 16 L 10 21 C 10 23 14 23 14 21 L 15 16 C 15 14 18 13 18 9 C 18 7 18 5 17 5 Z";
         } else if (shape === "canine") {
-            path = "M 12 3 C 10 5 7 6 7 9 C 7 13 9 14 9 16 L 10 21 C 10 23 14 23 14 21 L 15 16 C 15 14 18 13 18 9 C 18 6 15 5 12 3 Z";
+            path =
+                "M 12 3 C 10 5 7 6 7 9 C 7 13 9 14 9 16 L 10 21 C 10 23 14 23 14 21 L 15 16 C 15 14 18 13 18 9 C 18 6 15 5 12 3 Z";
         } else if (shape === "premolar") {
-            path = "M 8 4 C 6 5 5 7 5 10 C 5 13 8 14 8 16 L 9 21 C 9 23 15 23 15 21 L 16 16 C 16 14 19 13 19 10 C 19 7 18 5 16 4 C 14 3 10 3 8 4 Z";
+            path =
+                "M 8 4 C 6 5 5 7 5 10 C 5 13 8 14 8 16 L 9 21 C 9 23 15 23 15 21 L 16 16 C 16 14 19 13 19 10 C 19 7 18 5 16 4 C 14 3 10 3 8 4 Z";
         } else if (shape === "molar") {
-            path = "M 5 5 C 4 5 4 7 4 9 C 4 12 7 13 7 15 L 7 21 C 7 23 9 23 10 21 L 11 16 L 13 16 L 14 21 C 15 23 17 23 17 21 L 17 15 C 17 13 20 12 20 9 C 20 7 20 5 19 5 C 17 5 16 6 15 6 C 14 6 13 5 12 5 C 11 5 10 6 9 6 C 8 6 7 5 5 5 Z";
+            path =
+                "M 5 5 C 4 5 4 7 4 9 C 4 12 7 13 7 15 L 7 21 C 7 23 9 23 10 21 L 11 16 L 13 16 L 14 21 C 15 23 17 23 17 21 L 17 15 C 17 13 20 12 20 9 C 20 7 20 5 19 5 C 17 5 16 6 15 6 C 14 6 13 5 12 5 C 11 5 10 6 9 6 C 8 6 7 5 5 5 Z";
         }
 
         const fillColor = entry ? entry.color : "#f8fafc";
@@ -309,23 +315,35 @@ export default function TambahPemeriksaanPage() {
             <button
                 type="button"
                 onClick={() => openToothDialog(tooth)}
-                title={entry ? `Gigi ${tooth}: ${entry.condition_name}` : `Gigi ${tooth}`}
+                title={
+                    entry
+                        ? `Gigi ${tooth}: ${entry.condition_name}`
+                        : `Gigi ${tooth}`
+                }
                 className={`relative flex w-full aspect-[3/4] max-w-[64px] flex-col items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-violet-400 rounded-md group ${
-                    entry ? "opacity-100 scale-105" : "hover:text-violet-500 hover:scale-110 opacity-95 hover:opacity-100"
+                    entry
+                        ? "opacity-100 scale-105"
+                        : "hover:text-violet-500 hover:scale-110 opacity-95 hover:opacity-100"
                 }`}
             >
                 <svg
                     viewBox="0 0 24 24"
-                    strokeLinejoin="round" 
+                    strokeLinejoin="round"
                     strokeLinecap="round"
                     className={`w-full h-full drop-shadow-sm group-hover:drop-shadow-md transition-all ${isUpper ? "rotate-180" : ""}`}
-                    style={{ fill: fillColor, stroke: strokeColor, strokeWidth: entry ? 0 : 1.5 }}
+                    style={{
+                        fill: fillColor,
+                        stroke: strokeColor,
+                        strokeWidth: entry ? 0 : 1.5,
+                    }}
                 >
                     <path d={path} />
                 </svg>
                 <div
                     className={`absolute inset-0 flex items-center justify-center pointer-events-none p-1 ${
-                        isUpper ? "items-end pb-1 sm:pb-1.5" : "items-start pt-1 sm:pt-1.5"
+                        isUpper
+                            ? "items-end pb-1 sm:pb-1.5"
+                            : "items-start pt-1 sm:pt-1.5"
                     }`}
                 >
                     <span
@@ -796,7 +814,7 @@ export default function TambahPemeriksaanPage() {
                                                                 key={tObj.name}
                                                                 className="w-[calc(33.333%-0.7rem)] min-w-[70px] sm:min-w-[80px]"
                                                             >
-                                                                <Label className="text-[9px] sm:text-[12px] font-bold text-slate-500 mb-2 block text-center leading-tight h-7 sm:h-8 flex items-center justify-center px-0.5">
+                                                                <Label className="text-[9px] sm:text-[12px] font-bold text-slate-500 mb-2 text-center leading-tight h-7 sm:h-8 flex items-center justify-center px-0.5">
                                                                     {humanize(
                                                                         tObj.name,
                                                                     )}
@@ -1038,7 +1056,10 @@ export default function TambahPemeriksaanPage() {
                                         </p>
                                         <div className="flex items-center justify-center w-full gap-[2px] sm:gap-1 md:gap-1.5">
                                             {UPPER_TEETH.map((t) => (
-                                                <div key={t} className="flex-1 max-w-[64px] min-w-[14px] sm:min-w-[20px]">
+                                                <div
+                                                    key={t}
+                                                    className="flex-1 max-w-[64px] min-w-[14px] sm:min-w-[20px]"
+                                                >
                                                     <ToothBtn tooth={t} />
                                                 </div>
                                             ))}
@@ -1058,7 +1079,10 @@ export default function TambahPemeriksaanPage() {
                                     <div className="mb-6 mt-1">
                                         <div className="flex items-center justify-center w-full gap-[2px] sm:gap-1 md:gap-1.5 mb-2">
                                             {LOWER_TEETH.map((t) => (
-                                                <div key={t} className="flex-1 max-w-[64px] min-w-[14px] sm:min-w-[20px]">
+                                                <div
+                                                    key={t}
+                                                    className="flex-1 max-w-[64px] min-w-[14px] sm:min-w-[20px]"
+                                                >
                                                     <ToothBtn tooth={t} />
                                                 </div>
                                             ))}
