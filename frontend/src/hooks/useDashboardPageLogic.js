@@ -1,16 +1,21 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useSWR from "swr";
+
+const fetcher = async ([url, token]) => {
+    const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error("Gagal ambil data API");
+    const data = await res.json();
+    return data;
+};
 
 export function useDashboardPageLogic() {
     const navigate = useNavigate();
-    const [exams, setExams] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(20);
-    const [total, setTotal] = useState(0);
-    const cacheRef = useRef(new Map());
     const [debouncedQuery, setDebouncedQuery] = useState("");
 
     const token = localStorage.getItem("token");
@@ -28,83 +33,30 @@ export function useDashboardPageLogic() {
         }
     }, [navigate, token]);
 
-    useEffect(() => {
-        if (!token) return;
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("limit", String(limit));
+    if (debouncedQuery) params.set("q", debouncedQuery);
 
-        let cancelled = false;
-        const controller = new AbortController();
+    const { data: rawData, error: swrError, isLoading } = useSWR(
+        token ? [`/api/scans?${params.toString()}`, token] : null,
+        fetcher
+    );
 
-        const key = `${page}|${limit}|${debouncedQuery || ""}`;
-        const cached = cacheRef.current.get(key);
+    const error = swrError?.message || null;
+    const loading = isLoading;
 
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-
-            if (cached) {
-                setExams(cached.items);
-                setTotal(cached.total ?? cached.items.length);
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const params = new URLSearchParams();
-                params.set("page", String(page));
-                params.set("limit", String(limit));
-                if (debouncedQuery) params.set("q", debouncedQuery);
-
-                const url = `/api/scans?${params.toString()}`;
-
-                const res = await fetch(url, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    signal: controller.signal,
-                });
-
-                if (!res.ok) {
-                    throw new Error("Gagal ambil data pemeriksaan");
-                }
-
-                const data = await res.json();
-
-                // Support two response shapes: { items: [], total: n } or []
-                if (Array.isArray(data)) {
-                    if (cancelled) return;
-                    setExams(data);
-                    setTotal(data.length);
-                    cacheRef.current.set(key, {
-                        items: data,
-                        total: data.length,
-                    });
-                } else if (data && Array.isArray(data.items)) {
-                    if (cancelled) return;
-                    setExams(data.items);
-                    setTotal(Number(data.total) || data.items.length);
-                    cacheRef.current.set(key, {
-                        items: data.items,
-                        total: Number(data.total) || data.items.length,
-                    });
-                } else {
-                    throw new Error("Format data dari server tidak valid");
-                }
-            } catch (err) {
-                if (err.name === "AbortError") return;
-                console.error(err);
-                if (!cancelled) setError(err.message || "Terjadi kesalahan");
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        };
-
-        fetchData();
-
-        return () => {
-            cancelled = true;
-            controller.abort();
-        };
-    }, [token, page, limit, debouncedQuery]);
+    let exams = [];
+    let total = 0;
+    if (rawData) {
+        if (Array.isArray(rawData)) {
+            exams = rawData;
+            total = rawData.length;
+        } else if (rawData.items) {
+            exams = rawData.items;
+            total = Number(rawData.total) || rawData.items.length;
+        }
+    }
 
     // Debounce searchQuery to avoid expensive filtering/fetching on every keystroke
     useEffect(() => {

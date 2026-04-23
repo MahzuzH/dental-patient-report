@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"dental-app/config"
 	"fmt"
 	"net/http"
@@ -37,16 +38,16 @@ type reportDiagnosis struct {
 }
 
 type reportResponse struct {
-	ID          string            `json:"id"`
-	PatientName string            `json:"patient_name"`
-	Institution string            `json:"institution"`
-	DateOfBirth string            `json:"date_of_birth"`
-	Age         int               `json:"age"`
-	Gender      string            `json:"gender"`
-	ScanDate    string            `json:"scan_date"`
-	Status      string            `json:"status"`
+	ID          string              `json:"id"`
+	PatientName string              `json:"patient_name"`
+	Institution string              `json:"institution"`
+	DateOfBirth string              `json:"date_of_birth"`
+	Age         int                 `json:"age"`
+	Gender      string              `json:"gender"`
+	ScanDate    string              `json:"scan_date"`
+	Status      string              `json:"status"`
 	Images      map[string][]string `json:"images"`
-	Diagnosis   []reportDiagnosis `json:"diagnosis"`
+	Diagnosis   []reportDiagnosis   `json:"diagnosis"`
 }
 
 type odontogramEntryInput struct {
@@ -111,9 +112,9 @@ func isValidDateYYYYMMDD(v string) bool {
 	return err == nil
 }
 
-func recordExists(table, id string) (bool, error) {
+func recordExists(ctx context.Context, table, id string) (bool, error) {
 	var count int64
-	err := config.DB.Table(table).Where("id = ?", id).Count(&count).Error
+	err := config.DB.WithContext(ctx).Table(table).Where("id = ?", id).Count(&count).Error
 	if err != nil {
 		return false, err
 	}
@@ -153,13 +154,13 @@ func mapBadRequest(c *gin.Context, err error) bool {
 	return false
 }
 
-func createOdontogramEntries(checkupID string, entries []odontogramEntryInput) error {
+func createOdontogramEntries(ctx context.Context, checkupID string, entries []odontogramEntryInput) error {
 	for _, e := range entries {
 		conditionID := strings.TrimSpace(e.ConditionID)
 		surface := strings.TrimSpace(e.ToothSurface)
 		notes := strings.TrimSpace(e.Notes)
 
-		ok, err := recordExists("dental_conditions", conditionID)
+		ok, err := recordExists(ctx, "dental_conditions", conditionID)
 		if err != nil {
 			return err
 		}
@@ -173,7 +174,7 @@ func createOdontogramEntries(checkupID string, entries []odontogramEntryInput) e
 			VALUES
 				(UUID(), ?, ?, NULLIF(?, ''), ?, NULLIF(?, ''))
 		`
-		if err := config.DB.Exec(query, checkupID, e.ToothNumber, surface, conditionID, notes).Error; err != nil {
+		if err := config.DB.WithContext(ctx).Exec(query, checkupID, e.ToothNumber, surface, conditionID, notes).Error; err != nil {
 			return err
 		}
 	}
@@ -210,7 +211,7 @@ func GetScans(c *gin.Context) {
 	var rows []scanRow
 
 	// base query with joins
-	base := config.DB.
+	base := config.DB.WithContext(c.Request.Context()).
 		Table("checkups c").
 		Select(`
 			c.id,
@@ -303,7 +304,7 @@ func GetReport(c *gin.Context) {
 	}
 
 	var row reportRow
-	err := config.DB.
+	err := config.DB.WithContext(c.Request.Context()).
 		Table("checkups c").
 		Select(`
 			c.id,
@@ -353,7 +354,7 @@ func GetReport(c *gin.Context) {
 	}
 
 	var diagnosisRows []diagnosisRow
-	_ = config.DB.
+	_ = config.DB.WithContext(c.Request.Context()).
 		Table("odontogram_entries oe").
 		Select(`
 			oe.tooth_number,
@@ -383,7 +384,7 @@ func GetReport(c *gin.Context) {
 		Path string `gorm:"column:image_path"`
 	}
 	var imageRows []imageRow
-	_ = config.DB.
+	_ = config.DB.WithContext(c.Request.Context()).
 		Table("checkup_images ci").
 		Select("it.name AS type_name, ci.image_path").
 		Joins("JOIN image_types it ON it.id = ci.image_type_id").
@@ -438,8 +439,8 @@ func GetCheckupByID(c *gin.Context) {
 		CheckupDate  time.Time `gorm:"column:checkup_date" json:"-"`
 		GeneralNotes string    `gorm:"column:general_notes" json:"general_notes"`
 		// images are stored in checkup_images; fetched separately
-		Status       string    `gorm:"column:status" json:"status"`
-		CreatedAt    string    `gorm:"column:created_at" json:"created_at"`
+		Status    string `gorm:"column:status" json:"status"`
+		CreatedAt string `gorm:"column:created_at" json:"created_at"`
 	}
 
 	type entryRow struct {
@@ -453,7 +454,7 @@ func GetCheckupByID(c *gin.Context) {
 	}
 
 	var row checkupRow
-	err := config.DB.
+	err := config.DB.WithContext(c.Request.Context()).
 		Table("checkups c").
 		Select(`
 			c.id,
@@ -480,7 +481,7 @@ func GetCheckupByID(c *gin.Context) {
 	}
 
 	var entries []entryRow
-	if err := config.DB.
+	if err := config.DB.WithContext(c.Request.Context()).
 		Table("odontogram_entries oe").
 		Select(`
 			oe.id,
@@ -505,7 +506,7 @@ func GetCheckupByID(c *gin.Context) {
 		Path string `gorm:"column:image_path"`
 	}
 	var imageRows []imageRow
-	_ = config.DB.
+	_ = config.DB.WithContext(c.Request.Context()).
 		Table("checkup_images ci").
 		Select("it.name AS type_name, ci.image_path").
 		Joins("JOIN image_types it ON it.id = ci.image_type_id").
@@ -541,7 +542,7 @@ func GetImageTypes(c *gin.Context) {
 		Name string `gorm:"column:name" json:"name"`
 	}
 	var rows []trow
-	if err := config.DB.Table("image_types").Select("id, name").Order("id ASC").Scan(&rows).Error; err != nil {
+	if err := config.DB.WithContext(c.Request.Context()).Table("image_types").Select("id, name").Order("id ASC").Scan(&rows).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch image types"})
 		return
 	}
@@ -577,8 +578,9 @@ func CreateCheckup(c *gin.Context) {
 		return
 	}
 
-	ok, err := recordExists("patients", req.PatientID)
+	ok, err := recordExists(c.Request.Context(), "patients", req.PatientID)
 	if err != nil {
+		fmt.Printf("[Checkup] Failed patient validation: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate patient"})
 		return
 	}
@@ -587,8 +589,9 @@ func CreateCheckup(c *gin.Context) {
 		return
 	}
 
-	ok, err = recordExists("dentists", req.DentistID)
+	ok, err = recordExists(c.Request.Context(), "dentists", req.DentistID)
 	if err != nil {
+		fmt.Printf("[Checkup] Failed dentist validation: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate dentist"})
 		return
 	}
@@ -597,7 +600,7 @@ func CreateCheckup(c *gin.Context) {
 		return
 	}
 
-	tx := config.DB.Begin()
+	tx := config.DB.WithContext(c.Request.Context()).Begin()
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to start transaction"})
 		return
@@ -628,38 +631,76 @@ func CreateCheckup(c *gin.Context) {
 		return
 	}
 
-	for _, e := range req.Entries {
-		conditionID := strings.TrimSpace(e.ConditionID)
-		surface := strings.TrimSpace(e.ToothSurface)
-		notes := strings.TrimSpace(e.Notes)
-
-		ok, err := recordExists("dental_conditions", conditionID)
-		if err != nil {
-			tx.Rollback()
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate dental condition"})
-			return
-		}
-		if !ok {
-			tx.Rollback()
-			c.JSON(http.StatusBadRequest, gin.H{"error": "condition_id not found: " + conditionID})
-			return
+	// Bulk validate and insert Odontogram Entries (Eliminates N+1 Queries)
+	if len(req.Entries) > 0 {
+		var conditionIDs []string
+		for _, e := range req.Entries {
+			if strings.TrimSpace(e.ConditionID) != "" {
+				conditionIDs = append(conditionIDs, strings.TrimSpace(e.ConditionID))
+			}
 		}
 
-		insertEntryQuery := `
-			INSERT INTO odontogram_entries
-				(id, checkup_id, tooth_number, tooth_surface, condition_id, notes)
-			VALUES
-				(UUID(), ?, ?, NULLIF(?, ''), ?, NULLIF(?, ''))
-		`
-		if err := tx.Exec(insertEntryQuery, checkupID, e.ToothNumber, surface, conditionID, notes).Error; err != nil {
+		if len(conditionIDs) > 0 {
+			var validIDs []string
+			if err := tx.Table("dental_conditions").Where("id IN ?", conditionIDs).Pluck("id", &validIDs).Error; err != nil {
+				tx.Rollback()
+				fmt.Printf("[Checkup] Failed checking conditions: %v\n", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate dental condition"})
+				return
+			}
+			validMap := make(map[string]bool)
+			for _, v := range validIDs {
+				validMap[v] = true
+			}
+
+			// Validate all first
+			for _, e := range req.Entries {
+				if !validMap[strings.TrimSpace(e.ConditionID)] {
+					tx.Rollback()
+					c.JSON(http.StatusBadRequest, gin.H{"error": "condition_id not found: " + e.ConditionID})
+					return
+				}
+			}
+		}
+
+		// Perform bulk insert
+		var valueStrings []string
+		var valueArgs []interface{}
+		for _, e := range req.Entries {
+			valueStrings = append(valueStrings, "(UUID(), ?, ?, NULLIF(?, ''), ?, NULLIF(?, ''))")
+			valueArgs = append(valueArgs, checkupID, e.ToothNumber, strings.TrimSpace(e.ToothSurface), strings.TrimSpace(e.ConditionID), strings.TrimSpace(e.Notes))
+		}
+
+		stmt := fmt.Sprintf("INSERT INTO odontogram_entries (id, checkup_id, tooth_number, tooth_surface, condition_id, notes) VALUES %s", strings.Join(valueStrings, ","))
+		if err := tx.Exec(stmt, valueArgs...).Error; err != nil {
 			tx.Rollback()
+			fmt.Printf("[Checkup] Bulks insert error: %v\n", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create odontogram entries"})
 			return
 		}
 	}
 
-	// insert checkup images if provided
+	// insert checkup images if provided (Bulk validate and Insert)
 	if len(req.Images) > 0 {
+		// pre-fetch image types mapping
+		var imageTypes []struct {
+			ID   int
+			Name string
+		}
+		if err := tx.Table("image_types").Select("id, name").Scan(&imageTypes).Error; err != nil {
+			tx.Rollback()
+			fmt.Printf("[Checkup] Failed fetching image types: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load image types"})
+			return
+		}
+
+		typeMap := make(map[string]int)
+		for _, t := range imageTypes {
+			typeMap[t.Name] = t.ID
+		}
+
+		var valueStrings []string
+		var valueArgs []interface{}
 		for _, img := range req.Images {
 			imgType := strings.TrimSpace(img.ImageType)
 			imgPath := strings.TrimSpace(img.ImagePath)
@@ -668,27 +709,22 @@ func CreateCheckup(c *gin.Context) {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image entry"})
 				return
 			}
-
-			// resolve image_type id
-			var typeID int
-			err := tx.Table("image_types").Select("id").Where("name = ?", imgType).Limit(1).Scan(&typeID).Error
-			if err != nil || typeID == 0 {
+			typeID, ok := typeMap[imgType]
+			if !ok {
 				tx.Rollback()
 				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image type: " + imgType})
 				return
 			}
+			valueStrings = append(valueStrings, "(UUID(), ?, ?, ?)")
+			valueArgs = append(valueArgs, checkupID, typeID, imgPath)
+		}
 
-			insertImgQuery := `
-				INSERT INTO checkup_images
-					(id, checkup_id, image_type_id, image_path)
-				VALUES
-					(UUID(), ?, ?, ?)
-			`
-			if err := tx.Exec(insertImgQuery, checkupID, typeID, imgPath).Error; err != nil {
-				tx.Rollback()
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert checkup images"})
-				return
-			}
+		stmt := fmt.Sprintf("INSERT INTO checkup_images (id, checkup_id, image_type_id, image_path) VALUES %s", strings.Join(valueStrings, ","))
+		if err := tx.Exec(stmt, valueArgs...).Error; err != nil {
+			tx.Rollback()
+			fmt.Printf("[Checkup] Bulks images insert error: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert checkup images"})
+			return
 		}
 	}
 
@@ -731,7 +767,7 @@ func UpdateCheckup(c *gin.Context) {
 		return
 	}
 
-	exists, err := recordExists("checkups", id)
+	exists, err := recordExists(c.Request.Context(), "checkups", id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check checkup"})
 		return
@@ -742,7 +778,7 @@ func UpdateCheckup(c *gin.Context) {
 	}
 
 	if req.PatientID != "" {
-		ok, err := recordExists("patients", req.PatientID)
+		ok, err := recordExists(c.Request.Context(), "patients", req.PatientID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate patient"})
 			return
@@ -754,7 +790,7 @@ func UpdateCheckup(c *gin.Context) {
 	}
 
 	if req.DentistID != "" {
-		ok, err := recordExists("dentists", req.DentistID)
+		ok, err := recordExists(c.Request.Context(), "dentists", req.DentistID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate dentist"})
 			return
@@ -812,7 +848,7 @@ func UpdateCheckup(c *gin.Context) {
 			surface := strings.TrimSpace(e.ToothSurface)
 			notes := strings.TrimSpace(e.Notes)
 
-			ok, err := recordExists("dental_conditions", conditionID)
+			ok, err := recordExists(c.Request.Context(), "dental_conditions", conditionID)
 			if err != nil {
 				tx.Rollback()
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate dental condition"})

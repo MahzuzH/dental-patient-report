@@ -181,10 +181,12 @@ export default function TambahPemeriksaanPage() {
         const timer = setTimeout(() => {
             // we only search if there's a query or if we need to show the initial list
             // but always fetching first 25 on mount/empty is good too
-            authFetch(`/api/patients?q=${encodeURIComponent(patientSearch || "")}&limit=25`)
+            authFetch(
+                `/api/patients?q=${encodeURIComponent(patientSearch || "")}&limit=25`,
+            )
                 .then((r) => r.json())
                 .then((d) => {
-                    const arr = Array.isArray(d) ? d : (d.data || d.items || []);
+                    const arr = Array.isArray(d) ? d : d.data || d.items || [];
                     setPatients(arr);
                 })
                 .catch(() => {});
@@ -276,9 +278,39 @@ export default function TambahPemeriksaanPage() {
         });
     };
 
+    const getToothShape = (tooth) => {
+        const t = Number(tooth);
+        const d = t % 10;
+        if (d === 1 || d === 2) return "incisor";
+        if (d === 3) return "canine";
+        if (d === 4 || d === 5) return "premolar";
+        return "molar";
+    };
+
     /* ─── tooth button renderer ─── */
     const ToothBtn = ({ tooth }) => {
         const entry = entries[tooth];
+        const isUpper = UPPER_TEETH.includes(tooth);
+        const shape = getToothShape(tooth);
+
+        let path = "";
+        if (shape === "incisor") {
+            path =
+                "M 7 5 C 6 5 6 7 6 9 C 6 13 9 14 9 16 L 10 21 C 10 23 14 23 14 21 L 15 16 C 15 14 18 13 18 9 C 18 7 18 5 17 5 Z";
+        } else if (shape === "canine") {
+            path =
+                "M 12 3 C 10 5 7 6 7 9 C 7 13 9 14 9 16 L 10 21 C 10 23 14 23 14 21 L 15 16 C 15 14 18 13 18 9 C 18 6 15 5 12 3 Z";
+        } else if (shape === "premolar") {
+            path =
+                "M 8 4 C 6 5 5 7 5 10 C 5 13 8 14 8 16 L 9 21 C 9 23 15 23 15 21 L 16 16 C 16 14 19 13 19 10 C 19 7 18 5 16 4 C 14 3 10 3 8 4 Z";
+        } else if (shape === "molar") {
+            path =
+                "M 5 5 C 4 5 4 7 4 9 C 4 12 7 13 7 15 L 7 21 C 7 23 9 23 10 21 L 11 16 L 13 16 L 14 21 C 15 23 17 23 17 21 L 17 15 C 17 13 20 12 20 9 C 20 7 20 5 19 5 C 17 5 16 6 15 6 C 14 6 13 5 12 5 C 11 5 10 6 9 6 C 8 6 7 5 5 5 Z";
+        }
+
+        const fillColor = entry ? entry.color : "#f8fafc";
+        const strokeColor = entry ? entry.color : "#cbd5e1";
+
         return (
             <button
                 type="button"
@@ -288,23 +320,51 @@ export default function TambahPemeriksaanPage() {
                         ? `Gigi ${tooth}: ${entry.condition_name}`
                         : `Gigi ${tooth}`
                 }
-                className={`relative flex h-10 w-9 flex-col items-center justify-center rounded-lg text-[10px] font-bold border-2 transition-all hover:scale-110 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-violet-400 ${
+                className={`relative flex w-full aspect-[3/4] max-w-[64px] flex-col items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-violet-400 rounded-md group ${
                     entry
-                        ? "text-white shadow-md scale-105"
-                        : "bg-slate-50 text-slate-400 border-slate-200 hover:border-violet-300 hover:text-violet-500"
+                        ? "opacity-100 scale-105"
+                        : "hover:text-violet-500 hover:scale-110 opacity-95 hover:opacity-100"
                 }`}
-                style={
-                    entry
-                        ? {
-                              backgroundColor: entry.color,
-                              borderColor: entry.color,
-                          }
-                        : {}
-                }
             >
-                {tooth}
+                <svg
+                    viewBox="0 0 24 24"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    className={`w-full h-full drop-shadow-sm group-hover:drop-shadow-md transition-all ${isUpper ? "rotate-180" : ""}`}
+                    style={{
+                        fill: fillColor,
+                        stroke: strokeColor,
+                        strokeWidth: entry ? 0 : 1.5,
+                    }}
+                >
+                    <path d={path} />
+                </svg>
+                <div
+                    className={`absolute inset-0 flex items-center justify-center pointer-events-none p-1 ${
+                        isUpper
+                            ? "items-end pb-1 sm:pb-1.5"
+                            : "items-start pt-1 sm:pt-1.5"
+                    }`}
+                >
+                    <span
+                        className="font-black leading-none"
+                        style={{
+                            fontSize: "clamp(8px, 2vw, 10px)",
+                            color: entry ? "#fff" : "#475569",
+                            textShadow: entry
+                                ? "0px 1px 2px rgba(0,0,0,0.5)"
+                                : "0px 1px 3px rgba(255,255,255,1), 0px 0px 2px rgba(255,255,255,0.9)",
+                        }}
+                    >
+                        {tooth}
+                    </span>
+                </div>
                 {entry && (
-                    <span className="block h-1 w-4 rounded-full bg-white/60 mt-0.5" />
+                    <span
+                        className={`absolute ${
+                            isUpper ? "top-[-3px]" : "bottom-[-3px]"
+                        } block h-[3px] w-[14px] rounded-full bg-slate-400/30 blur-[0.5px]`}
+                    />
                 )}
             </button>
         );
@@ -754,7 +814,7 @@ export default function TambahPemeriksaanPage() {
                                                                 key={tObj.name}
                                                                 className="w-[calc(33.333%-0.7rem)] min-w-[70px] sm:min-w-[80px]"
                                                             >
-                                                                <Label className="text-[9px] sm:text-[12px] font-bold text-slate-500 mb-2 block text-center leading-tight h-7 sm:h-8 flex items-center justify-center px-0.5">
+                                                                <Label className="text-[9px] sm:text-[12px] font-bold text-slate-500 mb-2 text-center leading-tight h-7 sm:h-8 flex items-center justify-center px-0.5">
                                                                     {humanize(
                                                                         tObj.name,
                                                                     )}
@@ -990,34 +1050,44 @@ export default function TambahPemeriksaanPage() {
                                     </div>
 
                                     {/* ── Upper Jaw ── */}
-                                    <div className="mb-1">
+                                    <div className="mb-2">
                                         <p className="text-center text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">
                                             Rahang Atas
                                         </p>
-                                        <div className="flex flex-wrap justify-center gap-1.5">
+                                        <div className="flex items-center justify-center w-full gap-[2px] sm:gap-1 md:gap-1.5">
                                             {UPPER_TEETH.map((t) => (
-                                                <ToothBtn key={t} tooth={t} />
+                                                <div
+                                                    key={t}
+                                                    className="flex-1 max-w-[64px] min-w-[14px] sm:min-w-[20px]"
+                                                >
+                                                    <ToothBtn tooth={t} />
+                                                </div>
                                             ))}
                                         </div>
                                     </div>
 
                                     {/* Jaw divider */}
-                                    <div className="my-5 flex items-center gap-3">
+                                    <div className="my-3 flex items-center gap-2 sm:gap-3 px-2 sm:px-6">
                                         <div className="flex-1 border-t-2 border-dashed border-slate-200" />
-                                        <div className="rounded-full bg-violet-50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-400 border border-violet-100">
+                                        <div className="rounded-full bg-violet-50 px-3 py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-violet-400 border border-violet-100 whitespace-nowrap">
                                             Garis Oklusal
                                         </div>
                                         <div className="flex-1 border-t-2 border-dashed border-slate-200" />
                                     </div>
 
                                     {/* ── Lower Jaw ── */}
-                                    <div className="mb-6">
-                                        <div className="flex flex-wrap justify-center gap-1.5">
+                                    <div className="mb-6 mt-1">
+                                        <div className="flex items-center justify-center w-full gap-[2px] sm:gap-1 md:gap-1.5 mb-2">
                                             {LOWER_TEETH.map((t) => (
-                                                <ToothBtn key={t} tooth={t} />
+                                                <div
+                                                    key={t}
+                                                    className="flex-1 max-w-[64px] min-w-[14px] sm:min-w-[20px]"
+                                                >
+                                                    <ToothBtn tooth={t} />
+                                                </div>
                                             ))}
                                         </div>
-                                        <p className="text-center text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-3">
+                                        <p className="text-center text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
                                             Rahang Bawah
                                         </p>
                                     </div>
@@ -1054,7 +1124,7 @@ export default function TambahPemeriksaanPage() {
 
             {/* ── Tooth Entry Dialog ── */}
             <Dialog open={toothDialogOpen} onOpenChange={setToothDialogOpen}>
-                <DialogContent className="max-w-sm">
+                <DialogContent className="max-w-sm data-[state=open]:!animate-modalPop data-[state=closed]:!animate-modalClose">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <span

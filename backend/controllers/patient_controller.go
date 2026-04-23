@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"dental-app/config"
 	"net/http"
 	"strconv"
@@ -82,9 +83,9 @@ type institutionListItem struct {
 	CreatedAt    string `json:"created_at"`
 }
 
-func institutionExists(institutionID string) (bool, error) {
+func institutionExists(ctx context.Context, institutionID string) (bool, error) {
 	var count int64
-	err := config.DB.
+	err := config.DB.WithContext(ctx).
 		Table("partner_institutions").
 		Where("id = ?", institutionID).
 		Count(&count).Error
@@ -114,7 +115,7 @@ func CreatePatient(c *gin.Context) {
 		return
 	}
 
-	exists, err := institutionExists(req.InstitutionID)
+	exists, err := institutionExists(c.Request.Context(), req.InstitutionID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate institution"})
 		return
@@ -130,7 +131,7 @@ func CreatePatient(c *gin.Context) {
 		VALUES
 			(UUID(), ?, ?, NULLIF(?, ''), NULLIF(?, ''), ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''))
 	`
-	if err := config.DB.Exec(
+	if err := config.DB.WithContext(c.Request.Context()).Exec(
 		insertQuery,
 		req.InstitutionID,
 		req.FullName,
@@ -146,7 +147,7 @@ func CreatePatient(c *gin.Context) {
 	}
 
 	var created patientCreateResponse
-	if err := config.DB.
+	if err := config.DB.WithContext(c.Request.Context()).
 		Table("patients").
 		Select(`
 			id,
@@ -173,7 +174,7 @@ func CreatePatient(c *gin.Context) {
 
 func GetPatients(c *gin.Context) {
 	var patients []patientListItem
-	query := config.DB.
+	query := config.DB.WithContext(c.Request.Context()).
 		Table("patients p").
 		Select(`
 			p.id,
@@ -240,7 +241,7 @@ func GetPatientByID(c *gin.Context) {
 	}
 
 	var patient patientDetailResponse
-	err := config.DB.
+	err := config.DB.WithContext(c.Request.Context()).
 		Table("patients p").
 		Select(`
 			p.id,
@@ -289,7 +290,7 @@ func UpdatePatient(c *gin.Context) {
 	req.Phone = strings.TrimSpace(req.Phone)
 
 	var existingCount int64
-	if err := config.DB.Table("patients").Where("id = ?", id).Count(&existingCount).Error; err != nil {
+	if err := config.DB.WithContext(c.Request.Context()).Table("patients").Where("id = ?", id).Count(&existingCount).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check patient"})
 		return
 	}
@@ -299,7 +300,7 @@ func UpdatePatient(c *gin.Context) {
 	}
 
 	if req.InstitutionID != "" {
-		exists, err := institutionExists(req.InstitutionID)
+		exists, err := institutionExists(c.Request.Context(), req.InstitutionID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate institution"})
 			return
@@ -342,7 +343,7 @@ func UpdatePatient(c *gin.Context) {
 		return
 	}
 
-	if err := config.DB.Table("patients").Where("id = ?", id).Updates(updates).Error; err != nil {
+	if err := config.DB.WithContext(c.Request.Context()).Table("patients").Where("id = ?", id).Updates(updates).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update patient"})
 		return
 	}
@@ -353,7 +354,7 @@ func UpdatePatient(c *gin.Context) {
 func GetInstitutions(c *gin.Context) {
 	var institutions []institutionListItem
 
-	query := config.DB.
+	query := config.DB.WithContext(c.Request.Context()).
 		Table("partner_institutions").
 		Select(`
 			id,

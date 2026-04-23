@@ -3,150 +3,147 @@ import { Link } from "react-router-dom";
 import { Menu, X, Phone, UserRound } from "lucide-react";
 
 const Navbar = () => {
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 10);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    const navLinks = [
-        { name: "Beranda", href: "#home" },
-        { name: "Tentang", href: "#about" },
-        { name: "Tim Medis", href: "#doctors" },
-        { name: "Galeri", href: "#gallery" },
-        { name: "Kontak", href: "#contact" },
-    ];
-
-    const waLink =
-        "https://wa.me/6288975262351?text=Halo%20saya%20ingin%20booking%20perawatan%20di%20Sefya%20Dental%20Studio";
-
-    const handleSmoothScroll = (e, href) => {
-        e.preventDefault();
-        setIsMobileMenuOpen(false);
-        const element = document.querySelector(href);
-        if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
-        }
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
     };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    return (
-        <nav
-            className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-[#2a2a2a]/95 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-5"}`}
-        >
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="flex justify-between items-center">
-                    {/* Logo */}
-                    <Link
-                        to="/"
-                        onClick={(e) => handleSmoothScroll(e, "#home")}
-                        className="flex items-center gap-2 group"
-                    >
-                        <img
-                            src="/logo.jpg"
-                            alt="Logo Sefya Dental Studio"
-                            className="w-10 h-10 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform"
-                        />
-                        <span
-                            className={`font-montserrat text-xl font-bold tracking-tight text-white`}
-                        >
-                            Sefya Dental Studio
-                        </span>
-                    </Link>
+  const navLinks = [
+    { name: "Beranda", href: "#home" },
+    { name: "Tentang", href: "#about" },
+    { name: "Tim Medis", href: "#doctors" },
+    { name: "Galeri", href: "#gallery" },
+    { name: "Kontak", href: "#contact" },
+  ];
 
-                    {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-8">
-                        <ul className="flex items-center gap-6">
-                            {navLinks.map((link) => (
-                                <li key={link.name}>
-                                    <a
-                                        href={link.href}
-                                        onClick={(e) =>
-                                            handleSmoothScroll(e, link.href)
-                                        }
-                                        className="text-white hover:text-[#ff91a4] font-medium transition-colors drop-shadow-sm"
-                                    >
-                                        {link.name}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                        <div className="flex items-center gap-4">
-                            <Link
-                                to="/login"
-                                className="flex items-center gap-2 text-[#ff91a4] font-medium hover:text-rose-800 transition-colors"
-                            >
-                                <UserRound size={18} />
-                                <span>Masuk</span>
-                            </Link>
-                            <a
-                                href={waLink}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center gap-2 bg-[#ff91a4] hover:bg-[#d67a8a] text-white px-5 py-2.5 rounded-full font-medium transition-all shadow-md shadow-[#ff91a4]/20 hover:-translate-y-0.5"
-                            >
-                                <Phone size={18} />
-                                <span>Buat Janji</span>
-                            </a>
-                        </div>
-                    </div>
+  const waLink =
+    "https://wa.me/6288975262351?text=Halo%20saya%20ingin%20booking%20perawatan%20di%20Sefya%20Dental%20Studio";
 
-                    {/* Mobile Menu Toggle */}
-                    <button
-                        className="md:hidden text-[#b9b9b9] p-2"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    >
-                        {isMobileMenuOpen ? (
-                            <X size={24} />
-                        ) : (
-                            <Menu size={24} />
-                        )}
-                    </button>
-                </div>
+  const handleSmoothScroll = (e, href) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 border-b ${isScrolled ? "bg-black/60 backdrop-blur-xl border-white/10 py-4" : "bg-transparent border-transparent py-6"}`}
+    >
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex justify-between items-center">
+          {/* Logo */}
+          <Link
+            to="/"
+            onClick={(e) => handleSmoothScroll(e, "#home")}
+            className="flex items-center gap-3 group"
+          >
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl overflow-hidden shadow-2xl border border-white/10 group-hover:border-white/20 transition-colors">
+              <img
+                src="/logo.jpg"
+                alt="Logo Sefya Dental Studio"
+                className="w-full h-full object-cover"
+              />
             </div>
+            <span
+              className={`font-montserrat text-lg font-bold tracking-tight text-[#ededed]`}
+            >
+              Sefya Dental Studio
+            </span>
+          </Link>
 
-            {/* Mobile Menu */}
-            {isMobileMenuOpen && (
-                <div className="md:hidden absolute top-full left-0 w-full bg-transparent shadow-lg border-t border-[#4e4e4e]/40 py-4 px-4 flex flex-col gap-4">
-                    <ul className="flex flex-col gap-3">
-                        {navLinks.map((link) => (
-                            <li key={link.name}>
-                                <a
-                                    href={link.href}
-                                    onClick={(e) =>
-                                        handleSmoothScroll(e, link.href)
-                                    }
-                                    className="block text-[#d0d0d0] hover:text-[#ff91a4] font-medium py-2"
-                                >
-                                    {link.name}
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-                    <div className="h-px bg-[#252525]/80 border-[#3d3d3d] my-2"></div>
-                    <Link
-                        to="/login"
-                        className="flex items-center justify-center gap-2 text-[#ff91a4] font-medium py-2 border border-rose-200 rounded-lg hover:bg-rose-50 transition-colors"
-                    >
-                        <UserRound size={18} />
-                        <span>Masuk</span>
-                    </Link>
-                    <a
-                        filter="_blank"
-                        href={waLink}
-                        className="flex items-center justify-center gap-2 bg-[#ff91a4] hover:bg-[#d67a8a] text-white px-5 py-3 rounded-lg font-medium transition-all"
-                    >
-                        <Phone size={18} />
-                        <span>Booking via WhatsApp</span>
-                    </a>
-                </div>
-            )}
-        </nav>
-    );
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-8">
+            <ul className="flex items-center gap-6">
+              {navLinks.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => handleSmoothScroll(e, link.href)}
+                    className="text-sm font-medium text-[#888] hover:text-[#ededed] transition-colors"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div className="flex items-center gap-4 border-l border-white/10 pl-8">
+              <Link
+                to="/login"
+                className="flex items-center gap-2 text-sm font-medium text-[#888] hover:text-[#ededed] transition-colors"
+              >
+                <UserRound size={16} />
+                <span>Masuk</span>
+              </Link>
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 bg-[#ededed] hover:bg-white text-black px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-200"
+              >
+                <Phone size={16} />
+                <span>Buat Janji</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden text-[#888] hover:text-[#ededed] p-2 transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 w-full bg-[#050505]/95 backdrop-blur-xl border-b border-white/10 py-6 px-4 flex flex-col gap-6 shadow-2xl">
+          <ul className="flex flex-col gap-4">
+            {navLinks.map((link) => (
+              <li key={link.name}>
+                <a
+                  href={link.href}
+                  onClick={(e) => handleSmoothScroll(e, link.href)}
+                  className="block text-base font-medium text-[#888] hover:text-[#ededed] px-2"
+                >
+                  {link.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <div className="h-px bg-white/10 w-full"></div>
+          <div className="flex flex-col gap-4 px-2">
+            <Link
+              to="/login"
+              className="flex items-center justify-center gap-2 text-[#888] hover:text-[#ededed] font-medium py-3 border border-white/10 rounded-xl transition-colors"
+            >
+              <UserRound size={18} />
+              <span>Masuk</span>
+            </Link>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={waLink}
+              className="flex items-center justify-center gap-2 bg-[#ededed] hover:bg-white text-black py-3 rounded-xl font-semibold transition-colors"
+            >
+              <Phone size={18} />
+              <span>Booking via WhatsApp</span>
+            </a>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
 };
 
 export default Navbar;
