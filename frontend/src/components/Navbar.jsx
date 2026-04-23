@@ -36,7 +36,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed w-full z-50 transition-all duration-300 border-b ${isScrolled ? "bg-black/60 backdrop-blur-xl border-white/10 py-4" : "bg-transparent border-transparent py-6"}`}
+      className={`fixed w-full z-50 transition-all duration-300 border-b ${isScrolled ? "bg-white/90 backdrop-blur-xl border-slate-200 py-4 shadow-sm" : "bg-transparent border-transparent py-6"}`}
     >
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex justify-between items-center">
@@ -54,7 +54,7 @@ const Navbar = () => {
               />
             </div>
             <span
-              className={`font-montserrat text-lg font-bold tracking-tight text-[#ededed]`}
+              className={`font-montserrat text-lg font-bold tracking-tight text-[#0f172a]`}
             >
               Sefya Dental Studio
             </span>
@@ -68,17 +68,17 @@ const Navbar = () => {
                   <a
                     href={link.href}
                     onClick={(e) => handleSmoothScroll(e, link.href)}
-                    className="text-sm font-medium text-[#888] hover:text-[#ededed] transition-colors"
+                    className="text-sm font-medium text-[#64748b] hover:text-[#ff91a4] transition-colors"
                   >
                     {link.name}
                   </a>
                 </li>
               ))}
             </ul>
-            <div className="flex items-center gap-4 border-l border-white/10 pl-8">
+            <div className="flex items-center gap-4 border-l border-slate-300 pl-8">
               <Link
                 to="/login"
-                className="flex items-center gap-2 text-sm font-medium text-[#888] hover:text-[#ededed] transition-colors"
+                className="flex items-center gap-2 text-sm font-medium text-[#64748b] hover:text-[#ff91a4] transition-colors"
               >
                 <UserRound size={16} />
                 <span>Masuk</span>
@@ -87,7 +87,7 @@ const Navbar = () => {
                 href={waLink}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 bg-[#ededed] hover:bg-white text-black px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-200"
+                className="flex items-center gap-2 bg-[#ff91a4] hover:bg-[#fb7185] active:scale-95 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm shadow-rose-500/20"
               >
                 <Phone size={16} />
                 <span>Buat Janji</span>
@@ -97,7 +97,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden text-[#888] hover:text-[#ededed] p-2 transition-colors"
+            className="md:hidden text-[#475569] hover:text-[#0f172a] p-2 transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -107,25 +107,25 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-[#050505]/95 backdrop-blur-xl border-b border-white/10 py-6 px-4 flex flex-col gap-6 shadow-2xl">
+        <div className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200 py-6 px-4 flex flex-col gap-6 shadow-2xl">
           <ul className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <a
                   href={link.href}
                   onClick={(e) => handleSmoothScroll(e, link.href)}
-                  className="block text-base font-medium text-[#888] hover:text-[#ededed] px-2"
+                  className="block text-base font-medium text-[#64748b] hover:text-[#ff91a4] px-2"
                 >
                   {link.name}
                 </a>
               </li>
             ))}
           </ul>
-          <div className="h-px bg-white/10 w-full"></div>
+          <div className="h-px bg-slate-200 w-full"></div>
           <div className="flex flex-col gap-4 px-2">
             <Link
               to="/login"
-              className="flex items-center justify-center gap-2 text-[#888] hover:text-[#ededed] font-medium py-3 border border-white/10 rounded-xl transition-colors"
+              className="flex items-center justify-center gap-2 text-[#475569] hover:text-[#ff91a4] font-medium py-3 border border-slate-200 rounded-xl transition-colors"
             >
               <UserRound size={18} />
               <span>Masuk</span>
@@ -134,7 +134,7 @@ const Navbar = () => {
               target="_blank"
               rel="noreferrer"
               href={waLink}
-              className="flex items-center justify-center gap-2 bg-[#ededed] hover:bg-white text-black py-3 rounded-xl font-semibold transition-colors"
+              className="flex items-center justify-center gap-2 bg-[#ff91a4] hover:bg-[#fb7185] active:scale-95 text-white py-3 rounded-xl font-semibold transition-all shadow-sm shadow-rose-500/20"
             >
               <Phone size={18} />
               <span>Booking via WhatsApp</span>

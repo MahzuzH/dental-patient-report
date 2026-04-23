@@ -47,21 +47,21 @@ const Doctors = () => {
   return (
     <section
       id="doctors"
-      className="py-24 relative w-full border-y border-white/10"
+      className="py-24 relative w-full border-y border-slate-200"
     >
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 shadow-sm mb-6">
             <span className="w-2 h-2 rounded-full bg-[#ff91a4] animate-pulse"></span>
-            <span className="text-xs font-semibold tracking-widest text-[#ededed] uppercase">
+            <span className="text-xs font-semibold tracking-widest text-[#0f172a] uppercase">
               Kenali Tim Kami
             </span>
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-            Ahli Gigi <span className="text-[#888]">Kami</span>
+          <h2 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-6 tracking-tight">
+            Ahli Gigi <span className="text-[#64748b]">Kami</span>
           </h2>
-          <p className="text-[#888] text-lg leading-relaxed max-w-2xl">
+          <p className="text-[#64748b] text-lg leading-relaxed max-w-2xl">
             Tenaga profesional kami yang berpengalaman siap memberikan perawatan
             terbaik sesuai kebutuhan Anda.
           </p>
@@ -75,23 +75,23 @@ const Doctors = () => {
                 key={index}
                 className="group relative flex flex-col items-center w-full sm:w-[calc(50%-2rem)] lg:w-[calc(40%-2rem)] max-w-sm"
               >
-                <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden border border-white/10 bg-[#050505] shadow-2xl transition-all duration-500 hover:border-white/20 hover:-translate-y-2">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10"></div>
+                <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-xl transition-all duration-500 hover:border-[#ff91a4]/50 hover:shadow-2xl hover:-translate-y-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/20 to-transparent z-10"></div>
                   <img
                     src={doctor.image}
                     alt={doctor.name}
-                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                    <div className="inline-flex items-center rounded-full bg-black/50 backdrop-blur-md px-3 py-1.5 border border-white/10 mb-3">
+                    <div className="inline-flex items-center rounded-full bg-white/80 backdrop-blur-md px-3 py-1.5 border border-slate-200 shadow-sm mb-3">
                       <span
                         className={`h-1.5 w-1.5 rounded-full ${doctor.accent} mr-2`}
                       ></span>
-                      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#ededed]">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#0f172a]">
                         {doctor.role}
                       </span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white tracking-tight leading-tight">
+                    <h3 className="text-2xl font-bold text-[#0f172a] tracking-tight leading-tight">
                       {doctor.name}
                     </h3>
                   </div>
@@ -107,23 +107,23 @@ const Doctors = () => {
                 key={index}
                 className="group relative flex flex-col items-center w-full sm:w-[calc(50%-2rem)] lg:w-[calc(33.333%-2rem)] max-w-xs"
               >
-                <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden border border-white/10 bg-[#050505] shadow-2xl transition-all duration-500 hover:border-white/20 hover:-translate-y-2">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10"></div>
+                <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-xl transition-all duration-500 hover:border-[#ff91a4]/50 hover:shadow-2xl hover:-translate-y-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/20 to-transparent z-10"></div>
                   <img
                     src={doctor.image}
                     alt={doctor.name}
-                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                    <div className="inline-flex items-center rounded-full bg-black/50 backdrop-blur-md px-3 py-1.5 border border-white/10 mb-3">
+                    <div className="inline-flex items-center rounded-full bg-white/80 backdrop-blur-md px-3 py-1.5 border border-slate-200 shadow-sm mb-3">
                       <span
                         className={`h-1.5 w-1.5 rounded-full ${doctor.accent} mr-2`}
                       ></span>
-                      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#ededed]">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#0f172a]">
                         {doctor.role}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold text-white tracking-tight leading-tight">
+                    <h3 className="text-xl font-bold text-[#0f172a] tracking-tight leading-tight">
                       {doctor.name}
                     </h3>
                   </div>

@@ -38,7 +38,7 @@ const Gallery = () => {
   return (
     <section
       id="gallery"
-      className="py-24 bg-transparent border-b border-[#4e4e4e]/40 relative overflow-hidden"
+      className="py-24 bg-transparent border-b border-slate-200 relative overflow-hidden"
     >
       <style>
         {`
@@ -60,11 +60,11 @@ const Gallery = () => {
           <h4 className="font-roboto text-[#ff91a4] font-semibold tracking-wider uppercase text-sm mb-3">
             Galeri Kami
           </h4>
-          <h2 className="font-roboto text-3xl md:text-4xl font-bold text-white mb-6 relative inline-block">
+          <h2 className="font-roboto text-3xl md:text-4xl font-bold text-[#0f172a] mb-6 relative inline-block">
             Momen & Fasilitas Terbaik
             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#ff91a4] rounded-full"></div>
           </h2>
-          <p className="text-[#b9b9b9] text-lg">
+          <p className="text-[#64748b] text-lg">
             Lihat lebih dekat kenyamanan fasilitas dan dedikasi kami dalam
             menghadirkan senyum sehat bagi setiap pasien.
           </p>
@@ -78,7 +78,7 @@ const Gallery = () => {
           {[...images, ...images].map((image, index) => (
             <div
               key={index}
-              className="relative overflow-hidden rounded-3xl w-[300px] md:w-[400px] aspect-[4/3] border border-[#4e4e4e]/40 bg-[#2f2f2f]/80 shadow-lg hover:shadow-[#ff91a4]/10 transition-all duration-500 cursor-pointer group shrink-0"
+              className="relative overflow-hidden rounded-3xl w-[300px] md:w-[400px] aspect-[4/3] border border-slate-200 bg-white shadow-lg hover:shadow-xl hover:shadow-[#ff91a4]/20 transition-all duration-500 cursor-pointer group shrink-0"
             >
               {/* Image */}
               <img
@@ -88,12 +88,12 @@ const Gallery = () => {
               />
 
               {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#252525]/90 via-[#252525]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
+              <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
                 <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                   <span className="inline-block px-3 py-1 rounded-full bg-[#ff91a4]/20 border border-[#ff91a4]/30 text-[#ff91a4] text-xs font-semibold mb-3 backdrop-blur-md">
                     {image.category}
                   </span>
-                  <h3 className="text-white text-xl font-bold mb-1 flex items-center gap-2">
+                  <h3 className="text-[#0f172a] text-xl font-bold mb-1 flex items-center gap-2">
                     {image.title}
                     <ZoomIn
                       size={18}
@@ -104,21 +104,21 @@ const Gallery = () => {
               </div>
 
               {/* Decorative Corner Icon */}
-              <div className="absolute top-4 right-4 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <Camera size={16} className="text-white" />
+              <div className="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-md border border-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Camera size={16} className="text-[#0f172a]" />
               </div>
             </div>
           ))}
         </div>
 
         {/* Gradient Fades for Smooth Edges */}
-        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#f8fafc] to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#f8fafc] to-transparent z-10 pointer-events-none"></div>
       </div>
 
       {/* Action Suggestion */}
       <div className="mt-16 text-center container mx-auto px-4">
-        <p className="text-[#b9b9b9] italic">
+        <p className="text-[#64748b] italic">
           "Kenyamanan Anda adalah prioritas utama kami di setiap langkah
           perawatan."
         </p>
