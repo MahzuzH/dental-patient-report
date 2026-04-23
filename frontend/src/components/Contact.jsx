@@ -17,7 +17,7 @@ const Contact = () => {
             </span>
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-6 tracking-tight">
-            Lokasi & <span className="text-[#64748b]">Kontak</span>
+            Lokasi & <span className="text-[#ff91a4]">Kontak</span>
           </h2>
           <p className="text-[#64748b] text-lg leading-relaxed max-w-2xl">
             Punya pertanyaan atau ingin buat janji temu? Tim kami siap membantu

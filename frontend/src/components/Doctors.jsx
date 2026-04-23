@@ -59,7 +59,7 @@ const Doctors = () => {
             </span>
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-6 tracking-tight">
-            Ahli Gigi <span className="text-[#64748b]">Kami</span>
+            Ahli <span className="text-[#ff91a4]">Gigi</span> Kami
           </h2>
           <p className="text-[#64748b] text-lg leading-relaxed max-w-2xl">
             Tenaga profesional kami yang berpengalaman siap memberikan perawatan

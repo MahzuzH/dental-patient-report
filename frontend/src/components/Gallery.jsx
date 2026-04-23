@@ -56,13 +56,15 @@ const Gallery = () => {
 
       <div className="container mx-auto px-4 md:px-6 mb-16">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto">
-          <h4 className="font-roboto text-[#ff91a4] font-semibold tracking-wider uppercase text-sm mb-3">
-            Galeri Kami
-          </h4>
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 shadow-sm mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#ff91a4] animate-pulse"></span>
+            <span className="text-xs font-semibold tracking-widest text-[#0f172a] uppercase">
+              Galeri Kami
+            </span>
+          </div>
           <h2 className="font-roboto text-3xl md:text-4xl font-bold text-[#0f172a] mb-6 relative inline-block">
-            Momen & Fasilitas Terbaik
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#ff91a4] rounded-full"></div>
+            <span className="text-[#ff91a4]">Galeri</span> Kami
           </h2>
           <p className="text-[#64748b] text-lg">
             Lihat lebih dekat kenyamanan fasilitas dan dedikasi kami dalam
@@ -123,7 +125,7 @@ const Gallery = () => {
           perawatan."
         </p>
       </div>
-    </section>
+    </section >
   );
 };
 
