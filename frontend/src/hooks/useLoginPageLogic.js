@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function useLoginPageLogic() {
+export function useLoginPageLogic(onLoginSuccess) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -28,8 +28,12 @@ export function useLoginPageLogic() {
                 // simpan token
                 localStorage.setItem("token", data.token);
 
-                // redirect
-                window.location.href = "/dashboard";
+                // redirect without full page reload to keep SPA routing stable
+                if (typeof onLoginSuccess === "function") {
+                    onLoginSuccess();
+                } else {
+                    window.location.assign("/dashboard");
+                }
             } else {
                 alert(data.error || "Login gagal");
             }
