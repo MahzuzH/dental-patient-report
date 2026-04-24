@@ -2,10 +2,14 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
@@ -33,20 +37,35 @@ func ConnectDB() {
 		dbName,
 	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	// Add proper error handling and logging configuration
+	gormConfig := &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	}
+
+	db, err := gorm.Open(mysql.Open(dsn), gormConfig)
 	if err != nil {
-		panic(fmt.Sprintf("Database connection failed: %v", err))
+		log.Fatalf("Database connection failed: %v", err)
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to get DB instance: %v", err))
+		log.Fatalf("Failed to get DB instance: %v", err)
 	}
 
 	if err := sqlDB.Ping(); err != nil {
-		panic(fmt.Sprintf("Database not reachable: %v", err))
+		log.Fatalf("Database not reachable: %v", err)
 	}
 
-	fmt.Println("\033[32m✅ Database connected successfully \033[0m")
+	// Add connection pool settings (Read from Env)
+	maxOpenConns, _ := strconv.Atoi(getEnv("DB_MAX_OPEN_CONNS", "100"))
+	maxIdleConns, _ := strconv.Atoi(getEnv("DB_MAX_IDLE_CONNS", "10"))
+	connMaxLifetime, _ := strconv.Atoi(getEnv("DB_CONN_MAX_LIFETIME", "60")) // in minutes
+
+	// Set connection pool parameters
+	sqlDB.SetMaxOpenConns(maxOpenConns)
+	sqlDB.SetMaxIdleConns(maxIdleConns)
+	sqlDB.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Minute)
+
+	log.Println("\033[32m✅ Database connected successfully \033[0m")
 	DB = db
 }
