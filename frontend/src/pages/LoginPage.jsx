@@ -2,6 +2,7 @@ import loginImg from "../assets/login.png";
 import { useState, useEffect } from "react";
 import { preload } from "react-dom";
 import { useLoginPageLogic } from "../hooks/useLoginPageLogic";
+import { useNavigate } from "react-router-dom";
 
 // Hoist static JSX to avoid re-creation on every render
 const ShowIcon = (
@@ -47,8 +48,9 @@ const HideIcon = (
 );
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const { email, setEmail, password, setPassword, loading, handleLogin } =
-    useLoginPageLogic();
+    useLoginPageLogic(() => navigate("/dashboard", { replace: true }));
   const [showPassword, setShowPassword] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
